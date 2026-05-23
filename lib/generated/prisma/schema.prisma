@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  customer
+  admin
+}
+
+enum OrderStatus {
+  pending
+  processing
+  out_for_delivery
+  delivered
+  cancelled
+  refunded
+}
+
+enum PaymentStatus {
+  created
+  captured
+  failed
+}
+
+enum DiscountType {
+  percentage
+  fixed
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id            Int        @id @default(autoincrement())
+  name          String?
+  email         String     @unique
+  phone         String?
+  role          Role       @default(customer)
+  passwordHash  String?
+  emailVerified Boolean    @default(false)
+  isBanned      Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  orders        Order[]
+  cartItems     CartItem[]
+  wishlists     Wishlist[]
+
+  @@map("users")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  name        String
+  description String?
+  price       Decimal          @db.Decimal(10, 2)
+  unit        String           @default("piece")
+  stockQty    Int              @default(0)
+  imageUrl    String?
+  isActive    Boolean          @default(true)
+  categoryId  Int?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  category    Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  variants    ProductVariant[]
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+  wishlists   Wishlist[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id         Int         @id @default(autoincrement())
+  productId  Int
+  name       String
+  price      Decimal     @db.Decimal(10, 2)
+  stockQty   Int         @default(0)
+  isDefault  Boolean     @default(false)
+  sortOrder  Int         @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@map("product_variants")
+}
+
+model Order {
+  id                Int            @id @default(autoincrement())
+  userId            Int?
+  status            OrderStatus    @default(pending)
+  totalAmount       Decimal        @db.Decimal(10, 2)
+  deliveryAddress   String
+  razorpayOrderId   String?
+  accessToken       String?        @unique
+  estimatedDelivery DateTime?
+  guestName         String?
+  guestEmail        String?
+  guestPhone        String?
+  discountAmount    Decimal        @default(0) @db.Decimal(10, 2)
+  couponId          Int?
+  deliveryAgentId   Int?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  user              User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon            Coupon?        @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  deliveryAgent     DeliveryAgent? @relation(fields: [deliveryAgentId], references: [id], onDelete: SetNull)
+  items             OrderItem[]
+  payment           Payment?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          Int             @id @default(autoincrement())
+  orderId     Int
+  productId   Int?
+  variantId   Int?
+  variantName String?
+  quantity    Int
+  unitPrice   Decimal         @db.Decimal(10, 2)
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@map("order_items")
+}
+
+model Payment {
+  id                Int           @id @default(autoincrement())
+  orderId           Int           @unique
+  razorpayPaymentId String?
+  amount            Decimal       @db.Decimal(10, 2)
+  status            PaymentStatus @default(created)
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlists")
+}
+
+model DeliveryAgent {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  vehicleType String   @default("bike")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
+
+  @@map("delivery_agents")
+}
+
+model Coupon {
+  id             Int          @id @default(autoincrement())
+  code           String       @unique
+  description    String?
+  discountType   DiscountType
+  discountValue  Decimal      @db.Decimal(10, 2)
+  minOrderAmount Decimal      @default(0) @db.Decimal(10, 2)
+  maxUses        Int?
+  usedCount      Int          @default(0)
+  isActive       Boolean      @default(true)
+  startsAt       DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  orders         Order[]
+
+  @@map("coupons")
+}
+
+model DeliveryArea {
+  id        Int      @id @default(autoincrement())
+  pincode   String   @unique
+  areaName  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("delivery_areas")
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("settings")
+}
