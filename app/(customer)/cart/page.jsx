@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Tag } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
-
-const DELIVERY_FEE = 40
-const FREE_DELIVERY_THRESHOLD = 499
+import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '@/lib/config'
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false)

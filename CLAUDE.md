@@ -11,7 +11,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 | Framework | Next.js 16.2.6 — App Router, plain JS (no TypeScript) |
 | Database | Supabase (hosted Postgres) |
 | ORM | Prisma 7 with `prisma-client-js` + `@prisma/adapter-pg` (PrismaPg) |
-| Auth | Supabase Auth via `@supabase/ssr` |
+| Auth | **Customer:** Clerk (`@clerk/nextjs`) · **Admin:** Supabase Auth (`@supabase/ssr`) |
 | State | Zustand with persist middleware (`store/cart.js`, `store/wishlist.js`) |
 | Images | Cloudinary (`lib/cloudinary.js`) |
 | Payments | Razorpay (not yet built) |
@@ -28,10 +28,17 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 - Prisma `Decimal` and `Date` fields are not serializable across the Server→Client boundary. Always serialize before passing to Client Components: `price.toNumber()`, `createdAt.toISOString()`
 
 ### Auth
+**Customer (Clerk):**
+- Browser: `useUser()`, `useClerk()`, `useSignIn()`, `useSignUp()` from `@clerk/nextjs`
+- Server/API routes: `auth()` (userId only), `currentUser()` (full profile) from `@clerk/nextjs/server`
+- Clerk owns credentials — Prisma `User` record is upserted by email on first order
+
+**Admin (Supabase):**
 - Supabase client: `lib/supabase/client.js` (browser), `lib/supabase/server.js` (server)
 - Always guard with `if (!process.env.NEXT_PUBLIC_SUPABASE_URL ...)` before calling `createClient()`
-- Middleware in `middleware.js` protects `/orders`, `/settings`, `/wishlist`, `/checkout`, `/admin/*`
 - Admin role: `user.user_metadata?.role === 'admin'`
+
+**Middleware** (`middleware.js`): Clerk for customer routes (`/orders`, `/settings`, `/wishlist`, `/checkout`), Supabase for `/admin/*`
 
 ### Dynamic Imports
 - `ssr: false` is NOT allowed in Server Components (Next.js 16 restriction)

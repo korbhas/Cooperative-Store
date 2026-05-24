@@ -1,28 +1,45 @@
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { createClient } from '@/lib/supabase/server'
 import { apiResponse, apiError, ApiError } from '@/lib/api-error'
+import { RAZORPAY_CURRENCY } from '@/lib/config'
+import { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from '@/lib/env'
+import { checkCouponRules, computeDiscount } from '@/lib/coupon'
 
 export async function POST(request) {
   try {
-    const supabase = await createClient()
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) throw new ApiError('Unauthorized', 401)
+    const { userId } = await auth()
+    if (!userId) throw new ApiError('Unauthorized', 401)
+
+    const clerkUser = await currentUser()
+    const email = clerkUser.emailAddresses[0]?.emailAddress
+    if (!email) throw new ApiError('No email on account', 400)
 
     const body = await request.json()
-    const { deliveryAddress, items, totalAmount, couponId, discountAmount } = body
+    const { deliveryAddress, items, totalAmount, couponId } = body
 
     if (!deliveryAddress || !items?.length) {
       throw new ApiError('Missing required fields', 400)
     }
 
+    // Re-validate coupon server-side — client preview can go stale
+    let validatedCoupon = null
+    let discountAmount = 0
+    if (couponId) {
+      validatedCoupon = await prisma.coupon.findUnique({ where: { id: couponId } })
+      if (!validatedCoupon) throw new ApiError('Coupon not found', 400)
+      const { valid, error } = checkCouponRules(validatedCoupon, { amount: Number(totalAmount) })
+      if (!valid) throw new ApiError(error, 400)
+      discountAmount = computeDiscount(validatedCoupon, Number(totalAmount))
+    }
+
     // Find or create the DB user
     const dbUser = await prisma.user.upsert({
-      where: { email: authUser.email },
+      where: { email },
       update: {},
       create: {
-        email: authUser.email,
-        name: authUser.user_metadata?.name ?? null,
-        role: authUser.user_metadata?.role === 'admin' ? 'admin' : 'customer',
+        email,
+        name: clerkUser.fullName ?? clerkUser.firstName ?? null,
+        role: 'customer',
       },
       select: { id: true },
     })
@@ -34,7 +51,7 @@ export async function POST(request) {
           userId: dbUser.id,
           deliveryAddress,
           totalAmount,
-          discountAmount: discountAmount ?? 0,
+          discountAmount,
           couponId: couponId ?? null,
           status: 'pending',
           items: {
@@ -65,15 +82,15 @@ export async function POST(request) {
 
     // Try to create Razorpay order
     let razorpayOrderId = null
-    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    if (RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET) {
       const { default: Razorpay } = await import('razorpay')
       const razorpay = new Razorpay({
-        key_id: process.env.RAZORPAY_KEY_ID,
-        key_secret: process.env.RAZORPAY_KEY_SECRET,
+        key_id: RAZORPAY_KEY_ID,
+        key_secret: RAZORPAY_KEY_SECRET,
       })
       const rzpOrder = await razorpay.orders.create({
         amount: Math.round(Number(totalAmount) * 100),
-        currency: 'INR',
+        currency: RAZORPAY_CURRENCY,
         receipt: `order_${order.id}`,
       })
       razorpayOrderId = rzpOrder.id

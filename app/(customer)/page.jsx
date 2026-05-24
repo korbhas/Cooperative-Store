@@ -2,8 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import PromoBanners from '@/components/PromoBanners'
 import BottomNav from '@/components/BottomNav'
-
-const CATEGORY_EMOJIS = ['🥦', '🥛', '🌾', '🍿', '🌶️', '🍞', '🧴', '🌿']
+import { CATEGORY_EMOJIS } from '@/lib/config'
 
 async function getCategories() {
   try {

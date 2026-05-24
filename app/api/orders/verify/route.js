@@ -1,13 +1,14 @@
 import crypto from 'crypto'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { createClient } from '@/lib/supabase/server'
 import { apiResponse, apiError, ApiError } from '@/lib/api-error'
+import { RAZORPAY_KEY_SECRET } from '@/lib/env'
 
 export async function POST(request) {
   try {
-    const supabase = await createClient()
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) throw new ApiError('Unauthorized', 401)
+    const { userId } = await auth()
+    if (!userId) throw new ApiError('Unauthorized', 401)
+    if (!RAZORPAY_KEY_SECRET) throw new ApiError('Payment verification not configured', 503)
 
     const { orderId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = await request.json()
 
@@ -17,7 +18,7 @@ export async function POST(request) {
 
     // Verify signature
     const expectedSig = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .createHmac('sha256', RAZORPAY_KEY_SECRET)
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
       .digest('hex')
 

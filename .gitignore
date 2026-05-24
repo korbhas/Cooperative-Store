@@ -10,6 +10,13 @@
 !.yarn/releases
 !.yarn/versions
 
+/dist
+
+# claude
+/CLAUDE.md
+/AGENTS.md
+
+
 # testing
 /coverage
 

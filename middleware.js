@@ -1,67 +1,50 @@
-import { createServerClient } from '@supabase/ssr'
+import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
 const CUSTOMER_PROTECTED = ['/orders', '/settings', '/wishlist', '/checkout']
 const CUSTOMER_AUTH_ROUTES = ['/login', '/register']
-const ADMIN_LOGIN = '/admin/login'
+const CUSTOMER_AUTH_PREFIXES = ['/login/', '/register/']
 
-export async function middleware(request) {
-  // Skip middleware if Supabase is not configured yet
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return NextResponse.next({ request })
-  }
-
-  let supabaseResponse = NextResponse.next({ request })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
+export default clerkMiddleware(async (auth, request) => {
   const { pathname } = request.nextUrl
-  const isAdmin = user?.user_metadata?.role === 'admin'
+  const { userId } = await auth()
 
-  // Admin routes
-  if (pathname === ADMIN_LOGIN) {
-    if (isAdmin) return NextResponse.redirect(new URL('/admin/dashboard', request.url))
-    return supabaseResponse
-  }
+  // Admin routes — Clerk auth
   if (pathname.startsWith('/admin')) {
-    if (!user) return NextResponse.redirect(new URL('/admin/login', request.url))
-    if (!isAdmin) return NextResponse.redirect(new URL('/', request.url))
-    return supabaseResponse
+    const isLoginPage = pathname === '/admin/login' || pathname.startsWith('/admin/login/')
+
+    if (isLoginPage) {
+      // Already signed in → send to dashboard (role check happens in protected layout)
+      if (userId) return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+      return NextResponse.next()
+    }
+
+    // All other /admin/* require authentication; role check is in (protected)/layout.jsx
+    if (!userId) {
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('returnTo', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    return NextResponse.next()
   }
 
-  // Customer routes
+  // Customer routes — Clerk auth
   const isProtected = CUSTOMER_PROTECTED.some((r) => pathname.startsWith(r))
-  const isAuthPage = CUSTOMER_AUTH_ROUTES.some((r) => pathname.startsWith(r))
-
-  if (isProtected && !user) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (isProtected && !userId) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('returnTo', pathname)
+    return NextResponse.redirect(loginUrl)
   }
-  if (isAuthPage && user) {
+
+  const isAuthPage = CUSTOMER_AUTH_ROUTES.some((r) => pathname === r) ||
+    CUSTOMER_AUTH_PREFIXES.some((r) => pathname.startsWith(r))
+  if (isAuthPage && userId) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  return supabaseResponse
-}
+  return NextResponse.next()
+})
 
 export const config = {
   matcher: [

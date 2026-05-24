@@ -1,55 +1,65 @@
 import { prisma } from '@/lib/prisma'
+import { unstable_cache } from 'next/cache'
 import { Suspense } from 'react'
 import BottomNav from '@/components/BottomNav'
 import CategoryFilter from '@/components/CategoryFilter'
 import ProductCard from '@/components/ProductCard'
 import SortSelect from '@/components/SortSelect'
 
-async function getProducts({ q, category, sort }) {
-  const where = { isActive: true }
-  if (q) where.name = { contains: q, mode: 'insensitive' }
-  if (category) where.category = { slug: category }
+const getProducts = unstable_cache(
+  async (q, category, sort) => {
+    const where = { isActive: true }
+    if (q) where.name = { contains: q, mode: 'insensitive' }
+    if (category) where.category = { slug: category }
 
-  let orderBy = { name: 'asc' }
-  if (sort === 'price_asc') orderBy = { price: 'asc' }
-  else if (sort === 'price_desc') orderBy = { price: 'desc' }
-  else if (sort === 'newest') orderBy = { createdAt: 'desc' }
+    let orderBy = { name: 'asc' }
+    if (sort === 'price_asc') orderBy = { price: 'asc' }
+    else if (sort === 'price_desc') orderBy = { price: 'desc' }
+    else if (sort === 'newest') orderBy = { createdAt: 'desc' }
 
-  try {
-    return await prisma.product.findMany({
-      where,
-      orderBy,
-      include: { category: { select: { name: true, slug: true } } },
-    })
-  } catch {
-    return []
-  }
-}
+    try {
+      const products = await prisma.product.findMany({
+        where,
+        orderBy,
+        include: { category: { select: { name: true, slug: true } } },
+      })
+      return products.map((p) => ({
+        ...p,
+        price: p.price.toNumber(),
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.updatedAt.toISOString(),
+      }))
+    } catch {
+      return []
+    }
+  },
+  ['products-search'],
+  { revalidate: 60, tags: ['products'] }
+)
 
-async function getCategories() {
-  try {
-    return await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } })
-  } catch {
-    return []
-  }
-}
+const getCategories = unstable_cache(
+  async () => {
+    try {
+      return await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } })
+    } catch {
+      return []
+    }
+  },
+  ['categories'],
+  { revalidate: 3600, tags: ['categories'] }
+)
 
 export default async function ProductsPage({ searchParams }) {
   const { q, category, sort } = await searchParams
   const [products, categories] = await Promise.all([
-    getProducts({ q, category, sort }),
+    getProducts(q ?? '', category ?? '', sort ?? ''),
     getCategories(),
   ])
 
   const activeCategory = categories.find((c) => c.slug === category)
   const title = q ? `"${q}"` : activeCategory?.name ?? 'All Products'
 
-  const serialized = products.map((p) => ({
-    ...p,
-    price: p.price.toNumber(),
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
-  }))
+  const serialized = products
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--color-fm-paper)' }}>

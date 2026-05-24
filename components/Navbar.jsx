@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ShoppingCart, ClipboardList, Shield, LogOut, User, Home, Tag, Settings } from 'lucide-react'
+import { ShoppingCart, ClipboardList, LogOut, User, Home, Tag, Settings } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
-import { createClient } from '@/lib/supabase/client'
+import { useUser, useClerk } from '@clerk/nextjs'
 
 const NavSearch = dynamic(() => import('@/components/NavSearch'), {
   ssr: false,
@@ -23,31 +23,23 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const totalItems = useCartStore((s) => s.totalItems())
-
-  const [user, setUser] = useState(null)
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
 
-  // Supabase auth state
-  useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
-
-  async function handleLogout() {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/')
-  }
+  const { isLoaded, isSignedIn, user } = useUser()
+  const { signOut } = useClerk()
 
   const isAdmin = pathname.startsWith('/admin')
   if (isAdmin) return null
+
+  async function handleLogout() {
+    await signOut()
+    router.push('/')
+  }
+
+  const displayName = user?.fullName || user?.firstName || user?.primaryEmailAddress?.emailAddress || 'User'
+  const displayInitial = displayName.charAt(0).toUpperCase()
+  const displayEmail = user?.primaryEmailAddress?.emailAddress
 
   return (
     <header style={{
@@ -95,12 +87,12 @@ export default function Navbar() {
         })}
       </nav>
 
-      {/* Search — only on /products, client-only */}
+      {/* Search */}
       <NavSearch />
 
       {/* Right controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        {user ? (
+        {isLoaded && isSignedIn ? (
           <>
             <Link href="/orders" className="hidden sm:flex" style={{
               alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 7,
@@ -111,17 +103,6 @@ export default function Navbar() {
             }}>
               <ClipboardList size={14} />Orders
             </Link>
-
-            {user.user_metadata?.role === 'admin' && (
-              <Link href="/admin" className="hidden sm:flex" style={{
-                alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 7,
-                background: pathname.startsWith('/admin') ? 'var(--color-fm-green-soft)' : 'transparent',
-                color: pathname.startsWith('/admin') ? 'var(--color-fm-green-ink)' : 'var(--color-fm-ink2)',
-                fontFamily: 'var(--font-sans)', fontSize: 13, textDecoration: 'none',
-              }}>
-                <Shield size={14} />Admin
-              </Link>
-            )}
 
             <Link href="/cart" style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 7,
@@ -154,15 +135,17 @@ export default function Navbar() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 11, fontWeight: 700, color: 'var(--color-fm-green-ink)',
               }}>
-                {user.user_metadata?.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                {displayInitial}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
                 <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600, color: 'var(--color-fm-ink)' }}>
-                  {user.user_metadata?.name || user.email}
+                  {displayName}
                 </span>
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: 10, color: 'var(--color-fm-ink3)' }}>
-                  {user.email}
-                </span>
+                {displayEmail && (
+                  <span style={{ fontFamily: 'var(--font-sans)', fontSize: 10, color: 'var(--color-fm-ink3)' }}>
+                    {displayEmail}
+                  </span>
+                )}
               </div>
             </div>
 

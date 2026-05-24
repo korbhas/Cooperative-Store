@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { MapPin, Tag, ChevronRight, ShoppingBag, CheckCircle2 } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
 import { useCartStore } from '@/store/cart'
-import { createClient } from '@/lib/supabase/client'
-
-const DELIVERY_FEE = 40
-const FREE_THRESHOLD = 499
+import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD, RAZORPAY_CURRENCY, RAZORPAY_THEME_COLOR } from '@/lib/config'
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -24,8 +22,8 @@ function loadRazorpayScript() {
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const { user } = useUser()
   const [mounted, setMounted] = useState(false)
-  const [user, setUser] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
   const [form, setForm] = useState({ name: '', phone: '', address: '', city: '', pincode: '' })
@@ -39,16 +37,13 @@ export default function CheckoutPage() {
   const totalAmount = useCartStore((s) => s.totalAmount)
   const clearCart = useCartStore((s) => s.clearCart)
 
+  useEffect(() => { setMounted(true) }, [])
+
   useEffect(() => {
-    setMounted(true)
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data?.user) return
-      setUser(data.user)
-      setForm((f) => ({ ...f, name: data.user.user_metadata?.name || '' }))
-    })
-  }, [])
+    if (user) {
+      setForm((f) => ({ ...f, name: f.name || user.fullName || user.firstName || '' }))
+    }
+  }, [user])
 
   const checkPincode = useCallback(async (pin) => {
     if (!/^\d{6}$/.test(pin)) { setPincodeState({ status: null, areaName: '' }); return }
@@ -143,12 +138,12 @@ export default function CheckoutPage() {
       const rzp = new RazorpayClass({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: Math.round(total * 100),
-        currency: 'INR',
+        currency: RAZORPAY_CURRENCY,
         name: 'FreshMart',
         description: `Order #${data.orderId}`,
         order_id: data.razorpayOrderId,
-        prefill: { name, contact: phone, email: user?.email || '' },
-        theme: { color: '#1f4d34' },
+        prefill: { name, contact: phone, email: user?.primaryEmailAddress?.emailAddress || '' },
+        theme: { color: RAZORPAY_THEME_COLOR },
         handler: async (response) => {
           try {
             const vRes = await fetch('/api/orders/verify', {
@@ -199,7 +194,7 @@ export default function CheckoutPage() {
   }
 
   const subtotal = totalAmount()
-  const deliveryFee = subtotal >= FREE_THRESHOLD ? 0 : DELIVERY_FEE
+  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE
   let discount = 0
   if (coupon) {
     discount = coupon.discountType === 'percentage'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Search, X } from 'lucide-react'
 
@@ -10,6 +10,7 @@ export default function NavSearch() {
   const searchParams = useSearchParams()
   const isProducts = pathname === '/products'
   const [inputVal, setInputVal] = useState(searchParams.get('q') || '')
+  const debounceRef = useRef(null)
 
   useEffect(() => {
     setInputVal(isProducts ? (searchParams.get('q') || '') : '')
@@ -19,10 +20,13 @@ export default function NavSearch() {
 
   function handleSearch(val) {
     setInputVal(val)
-    const next = new URLSearchParams(searchParams)
-    if (val) next.set('q', val)
-    else next.delete('q')
-    router.replace(`/products?${next.toString()}`)
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      const next = new URLSearchParams(searchParams)
+      if (val) next.set('q', val)
+      else next.delete('q')
+      router.replace(`/products?${next.toString()}`)
+    }, 350)
   }
 
   return (
