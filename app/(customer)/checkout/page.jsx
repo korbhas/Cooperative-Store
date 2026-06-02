@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -26,8 +26,7 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const [form, setForm] = useState({ name: '', phone: '', address: '', city: '', pincode: '' })
-  const [pincodeState, setPincodeState] = useState({ status: null, areaName: '' })
+  const [form, setForm] = useState({ name: '', phone: '', address: '' })
 
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
@@ -45,25 +44,9 @@ export default function CheckoutPage() {
     }
   }, [user])
 
-  const checkPincode = useCallback(async (pin) => {
-    if (!/^\d{6}$/.test(pin)) { setPincodeState({ status: null, areaName: '' }); return }
-    setPincodeState({ status: 'checking', areaName: '' })
-    try {
-      const res = await fetch(`/api/delivery/check?pincode=${pin}`)
-      const data = await res.json()
-      setPincodeState(data.available
-        ? { status: 'valid', areaName: data.areaName }
-        : { status: 'invalid', areaName: '' }
-      )
-    } catch {
-      setPincodeState({ status: 'invalid', areaName: '' })
-    }
-  }, [])
-
   function handleChange(e) {
     const { name, value } = e.target
     setForm((f) => ({ ...f, [name]: value }))
-    if (name === 'pincode') checkPincode(value)
   }
 
   async function applyCoupon() {
@@ -87,18 +70,14 @@ export default function CheckoutPage() {
   }
 
   async function handlePlaceOrder() {
-    const { name, phone, address, city, pincode } = form
-    if (!name || !phone || !address || !pincode) {
+    const { name, phone, address } = form
+    if (!name || !phone || !address) {
       toast.error('Please fill in all delivery details')
-      return
-    }
-    if (pincodeState.status !== 'valid') {
-      toast.error('Delivery not available at this pincode')
       return
     }
 
     setSubmitting(true)
-    const addressStr = [address, city, pincodeState.areaName, pincode].filter(Boolean).join(', ')
+    const addressStr = address
 
     try {
       const res = await fetch('/api/orders', {
@@ -224,13 +203,6 @@ export default function CheckoutPage() {
                   <Field label="Phone" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" type="tel" />
                 </div>
                 <Field label="Address" name="address" value={form.address} onChange={handleChange} placeholder="House no, Street, Locality" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="City" name="city" value={form.city} onChange={handleChange} placeholder="Mumbai" />
-                  <div>
-                    <Field label="Pincode" name="pincode" value={form.pincode} onChange={handleChange} placeholder="400001" maxLength={6} />
-                    <PincodeHint state={pincodeState} />
-                  </div>
-                </div>
               </div>
             </Card>
 
@@ -419,27 +391,6 @@ function Field({ label, name, value, onChange, placeholder, type = 'text', maxLe
   )
 }
 
-function PincodeHint({ state }) {
-  if (!state.status || state.status === 'checking') {
-    return (
-      <div style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'var(--color-fm-ink3)', marginTop: 4, minHeight: 16 }}>
-        {state.status === 'checking' ? 'Checking availability…' : ''}
-      </div>
-    )
-  }
-  if (state.status === 'valid') {
-    return (
-      <div style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'var(--color-fm-green-ink)', marginTop: 4 }}>
-        ✓ Delivery available · {state.areaName}
-      </div>
-    )
-  }
-  return (
-    <div style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: '#dc2626', marginTop: 4 }}>
-      ✗ We don't deliver here yet
-    </div>
-  )
-}
 
 function Row({ label, value, green }) {
   return (

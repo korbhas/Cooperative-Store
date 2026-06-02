@@ -11,7 +11,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 | Framework | Next.js 16.2.6 — App Router, plain JS (no TypeScript) |
 | Database | Supabase (hosted Postgres) |
 | ORM | Prisma 7 with `prisma-client-js` + `@prisma/adapter-pg` (PrismaPg) |
-| Auth | **Customer:** Clerk (`@clerk/nextjs`) · **Admin:** Supabase Auth (`@supabase/ssr`) |
+| Auth | **Both customer + admin:** Clerk (`@clerk/nextjs`) |
 | State | Zustand with persist middleware (`store/cart.js`, `store/wishlist.js`) |
 | Images | Cloudinary (`lib/cloudinary.js`) |
 | Payments | Razorpay (not yet built) |
@@ -33,12 +33,13 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 - Server/API routes: `auth()` (userId only), `currentUser()` (full profile) from `@clerk/nextjs/server`
 - Clerk owns credentials — Prisma `User` record is upserted by email on first order
 
-**Admin (Supabase):**
-- Supabase client: `lib/supabase/client.js` (browser), `lib/supabase/server.js` (server)
-- Always guard with `if (!process.env.NEXT_PUBLIC_SUPABASE_URL ...)` before calling `createClient()`
-- Admin role: `user.user_metadata?.role === 'admin'`
+**Admin (Clerk):**
+- Server/API routes: same `auth()` + `currentUser()` from `@clerk/nextjs/server`
+- Admin role check: `user.publicMetadata?.role === 'admin'` (set in Clerk dashboard → User → Public Metadata)
+- Guard helper: `lib/admin-guard.js` → `requireAdmin()` for API routes
+- Protected layout: `app/admin/(protected)/layout.jsx` redirects non-admins to `/`
 
-**Middleware** (`middleware.js`): Clerk for customer routes (`/orders`, `/settings`, `/wishlist`, `/checkout`), Supabase for `/admin/*`
+**Middleware** (`middleware.js`): `clerkMiddleware` handles both `/admin/*` and customer protected routes
 
 ### Dynamic Imports
 - `ssr: false` is NOT allowed in Server Components (Next.js 16 restriction)
@@ -91,13 +92,14 @@ app/
 | `/products` | `app/(customer)/products/page.jsx` | Server Component, search/filter/sort + ProductCard grid |
 | `/cart` | `app/(customer)/cart/page.jsx` | Client Component, Zustand cart, qty stepper, order summary, free delivery nudge |
 | `/checkout` | `app/(customer)/checkout/page.jsx` | Client Component, delivery form + pincode validation, coupon, Razorpay payment |
-| `/login` | `app/(customer)/login/page.jsx` | Supabase signInWithPassword, `returnTo` redirect, `LoginForm` wrapped in `<Suspense>` for useSearchParams |
-| `/register` | `app/(customer)/register/page.jsx` | Supabase signUp with name metadata, email confirmation success state |
+| `/login` | `app/(customer)/login/page.jsx` | Clerk `<SignIn>`, `returnTo` redirect, `LoginForm` wrapped in `<Suspense>` for useSearchParams |
+| `/register` | `app/(customer)/register/page.jsx` | Clerk `<SignUp>` |
+| `/admin/login` | `app/admin/login/[[...rest]]/page.jsx` | Clerk `<SignIn>` with FreshMart styling, `signUpUrl` disabled |
 
 ## Components Built
 | Component | Type | Purpose |
 |---|---|---|
-| `Navbar` | Client | Top nav, Supabase auth state, cart badge |
+| `Navbar` | Client | Top nav, Clerk auth state, cart badge |
 | `NavSearch` | Client | Search input, isolated for useSearchParams |
 | `BottomNav` | Client | Mobile bottom navigation |
 | `PromoBanners` | Server | Static promo banners on home page |
@@ -118,10 +120,12 @@ app/
 
 ## Environment Variables
 ```
-DATABASE_URL=           # pooler (port 6543) — used at runtime
-DIRECT_URL=             # direct (port 5432) — used for migrations only
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+DATABASE_URL=                       # pooler (port 6543) — used at runtime
+DIRECT_URL=                         # direct (port 5432) — used for migrations only
+NEXT_PUBLIC_SUPABASE_URL=           # still needed for DB hosting (not for auth)
+NEXT_PUBLIC_SUPABASE_ANON_KEY=      # still needed for DB hosting (not for auth)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
 ```
 
 ## Database Models
@@ -130,13 +134,10 @@ User · Category · Product · ProductVariant · Order · OrderItem · Payment �
 ## Still To Build
 - `/orders/[id]` — Order confirmation / tracking page (needed for post-checkout redirect)
 - `/products/[id]` — Product detail page
-- `/cart` — Cart page
-- `/checkout` — Checkout + Razorpay
-- `/login`, `/register` — Supabase Auth UI
 - `/orders`, `/orders/[id]` — Order history + tracking
 - `/settings` — User profile settings
 - `/wishlist` — Wishlist page
-- `/admin/*` — 12 admin pages (dashboard, products, orders, users, coupons, delivery agents, areas, settings)
+- Remaining admin pages — coupons, delivery agents, areas
 
 ## Notes
 - `middleware.js` deprecation warning ("use proxy instead") — safe to ignore for now, it still works

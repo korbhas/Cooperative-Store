@@ -35,14 +35,14 @@ export default function ProductsPage() {
     if (categoryFilter) params.set('category', categoryFilter)
     const res = await fetch(`/api/admin/products?${params}`)
     const data = await res.json()
-    setProducts(data)
+    setProducts(Array.isArray(data) ? data : [])
     setLoading(false)
   }, [q, status, categoryFilter])
 
   useEffect(() => { fetchProducts() }, [fetchProducts])
 
   useEffect(() => {
-    fetch('/api/admin/categories').then(r => r.json()).then(setCategories)
+    fetch('/api/admin/categories').then(r => r.json()).then(d => setCategories(Array.isArray(d) ? d : []))
   }, [])
 
   async function handleDelete(id, name) {
