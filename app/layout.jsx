@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata = {
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
       <html lang="en" className="h-full">
         <body style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
