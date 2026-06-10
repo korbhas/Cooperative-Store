@@ -1,9 +1,12 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
+import * as Sentry from '@sentry/nextjs'
 import { prisma } from '@/lib/prisma'
 import { apiResponse, apiError, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
 import { RAZORPAY_CURRENCY } from '@/lib/config'
 import { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from '@/lib/env'
 import { checkCouponRules, computeDiscount } from '@/lib/coupon'
+import { notifyAdminOrderConfirmed } from '@/lib/whatsapp'
 
 export async function POST(request) {
   try {
@@ -15,10 +18,34 @@ export async function POST(request) {
     if (!email) throw new ApiError('No email on account', 400)
 
     const body = await request.json()
-    const { deliveryAddress, items, totalAmount, couponId } = body
+    const { deliveryAddress, phone, items, totalAmount, couponId } = body
 
     if (!deliveryAddress || !items?.length) {
       throw new ApiError('Missing required fields', 400)
+    }
+
+    // The cart is persisted client-side, so it can reference products that
+    // have since been deleted — reject with a clear message instead of
+    // letting order.create() fail on the foreign key.
+    const productIds = [...new Set(items.map((i) => i.productId))]
+    const variantIds = [...new Set(items.map((i) => i.variantId).filter(Boolean))]
+    const [existingProducts, existingVariants] = await Promise.all([
+      prisma.product.findMany({ where: { id: { in: productIds } }, select: { id: true } }),
+      variantIds.length
+        ? prisma.productVariant.findMany({ where: { id: { in: variantIds } }, select: { id: true } })
+        : Promise.resolve([]),
+    ])
+    if (existingProducts.length !== productIds.length || existingVariants.length !== variantIds.length) {
+      const foundProducts = new Set(existingProducts.map((p) => p.id))
+      const missingProductIds = productIds.filter((id) => !foundProducts.has(id))
+      logger.warn('order_stale_cart_items', { userId, missingProductIds })
+      return Response.json(
+        {
+          error: 'Some items in your cart are no longer available. They have been removed — please review your cart and try again.',
+          missingProductIds,
+        },
+        { status: 400 }
+      )
     }
 
     // Re-validate coupon server-side — client preview can go stale
@@ -32,13 +59,15 @@ export async function POST(request) {
       discountAmount = computeDiscount(validatedCoupon, Number(totalAmount))
     }
 
-    // Find or create the DB user
+    // Find or create the DB user (store phone so webhook can read it later)
+    const customerName = clerkUser.fullName ?? clerkUser.firstName ?? null
     const dbUser = await prisma.user.upsert({
       where: { email },
-      update: {},
+      update: { phone: phone ?? undefined },
       create: {
         email,
-        name: clerkUser.fullName ?? clerkUser.firstName ?? null,
+        name: customerName,
+        phone: phone ?? null,
         role: 'customer',
       },
       select: { id: true },
@@ -64,10 +93,6 @@ export async function POST(request) {
             })),
           },
         },
-      })
-
-      await tx.payment.create({
-        data: { orderId: newOrder.id, amount: totalAmount, status: 'created' },
       })
 
       if (couponId) {
@@ -101,8 +126,26 @@ export async function POST(request) {
       })
     }
 
+    logger.info('order_created', {
+      orderId: order.id,
+      userId: dbUser.id,
+      totalAmount: Number(totalAmount),
+      itemCount: items.length,
+      couponId: couponId ?? null,
+      razorpayOrderId,
+    })
+
+    // For COD (no Razorpay), notify admin immediately — paid orders are handled by the webhook
+    if (!razorpayOrderId) {
+      notifyAdminOrderConfirmed(order.id, customerName, phone, totalAmount, deliveryAddress).catch(() => {})
+    }
+
     return apiResponse({ orderId: order.id, razorpayOrderId })
   } catch (err) {
+    if (!(err instanceof ApiError)) {
+      logger.error('order_creation_failed', { message: err.message })
+      Sentry.captureException(err)
+    }
     return apiError(err)
   }
 }

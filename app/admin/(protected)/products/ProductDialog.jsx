@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Plus, Trash2, ImagePlus } from 'lucide-react'
+import { IconX, IconPlus, IconTrash, IconPhotoPlus } from '@tabler/icons-react'
+import PageLoader from '@/components/PageLoader'
 import toast from 'react-hot-toast'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const inputStyle = {
   width: '100%', padding: '8px 12px', borderRadius: 8,
@@ -93,7 +95,7 @@ export default function ProductDialog({ open, onClose, product, categories, onSa
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: '#fff', zIndex: 1 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--color-fm-ink)' }}>{isEdit ? 'Edit Product' : 'Add Product'}</div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><X size={18} /></button>
+          <button onClick={onClose} aria-label="Close dialog" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><IconX size={18} /></button>
         </div>
 
         {/* Body */}
@@ -109,16 +111,33 @@ export default function ProductDialog({ open, onClose, product, categories, onSa
             </div>
             <div>
               <label style={labelStyle}>Category</label>
-              <select style={inputStyle} value={form.categoryId} onChange={e => setField('categoryId', e.target.value)}>
-                <option value="">No category</option>
-                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+              <Select
+                value={form.categoryId === '' ? '__none' : String(form.categoryId)}
+                onValueChange={val => setField('categoryId', val === '__none' ? '' : val)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">No category</SelectItem>
+                  {categories.map(c => (
+                    <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label style={labelStyle}>Unit</label>
-              <select style={inputStyle} value={form.unit} onChange={e => setField('unit', e.target.value)}>
-                {['piece', 'kg', 'g', 'litre', 'ml', 'pack', 'dozen'].map(u => <option key={u} value={u}>{u}</option>)}
-              </select>
+              <Select value={form.unit} onValueChange={val => setField('unit', val)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {['piece', 'kg', 'g', 'litre', 'ml', 'pack', 'dozen'].map(u => (
+                    <SelectItem key={u} value={u}>{u}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label style={labelStyle}>Price (₹)</label>
@@ -148,10 +167,16 @@ export default function ProductDialog({ open, onClose, product, categories, onSa
               ) : (
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                   style={{ width: '100%', padding: '20px 12px', borderRadius: 8, border: '1.5px dashed var(--color-fm-line-soft)', background: uploading ? 'rgba(0,0,0,0.02)' : '#fafafa', cursor: uploading ? 'default' : 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <ImagePlus size={20} color="var(--color-fm-ink3)" strokeWidth={1.5} />
-                  <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)' }}>
-                    {uploading ? 'Uploading…' : 'Click to upload image'}
-                  </span>
+                  {uploading ? (
+                    <PageLoader label="Uploading…" className="py-0" />
+                  ) : (
+                    <>
+                      <IconPhotoPlus size={20} color="var(--color-fm-ink3)" stroke={1.5} />
+                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)' }}>
+                        Click to upload image
+                      </span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -171,7 +196,7 @@ export default function ProductDialog({ open, onClose, product, categories, onSa
                   <span style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)' }}>₹{v.price.toFixed(2)}</span>
                   <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)' }}>Qty: {v.stockQty}</span>
                   {v.isDefault && <span style={{ padding: '1px 6px', borderRadius: 99, background: 'var(--color-fm-green-soft)', color: 'var(--color-fm-green-ink)', fontSize: 10, fontFamily: 'var(--font-sans)', fontWeight: 600 }}>Default</span>}
-                  <button onClick={() => deleteVariant(v.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', display: 'flex', padding: 4 }}><Trash2 size={13} /></button>
+                  <button onClick={() => deleteVariant(v.id)} aria-label={`Delete variant ${v.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', display: 'flex', padding: 4 }}><IconTrash size={13} /></button>
                 </div>
               ))}
               <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
@@ -179,7 +204,7 @@ export default function ProductDialog({ open, onClose, product, categories, onSa
                 <input style={{ ...inputStyle, width: 80 }} type="number" min="0" step="0.01" value={newVariant.price} onChange={e => setNewVariant(v => ({ ...v, price: e.target.value }))} placeholder="Price" />
                 <input style={{ ...inputStyle, width: 70 }} type="number" min="0" value={newVariant.stockQty} onChange={e => setNewVariant(v => ({ ...v, stockQty: e.target.value }))} placeholder="Qty" />
                 <button onClick={addVariant} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--color-fm-green-soft)', color: 'var(--color-fm-green-ink)', fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  <Plus size={13} /> Add
+                  <IconPlus size={13} /> Add
                 </button>
               </div>
             </div>

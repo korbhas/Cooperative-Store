@@ -39,7 +39,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 - Guard helper: `lib/admin-guard.js` → `requireAdmin()` for API routes
 - Protected layout: `app/admin/(protected)/layout.jsx` redirects non-admins to `/`
 
-**Middleware** (`middleware.js`): `clerkMiddleware` handles both `/admin/*` and customer protected routes
+**Middleware** (`middleware.js`): `clerkMiddleware` handles both `/admin/*` and customer protected routes. Also gates onboarding: signed-out `/` → `/welcome`, signed-in `/welcome` → `/`
 
 ### Dynamic Imports
 - `ssr: false` is NOT allowed in Server Components (Next.js 16 restriction)
@@ -95,6 +95,7 @@ app/
 | `/login` | `app/(customer)/login/page.jsx` | Clerk `<SignIn>`, `returnTo` redirect, `LoginForm` wrapped in `<Suspense>` for useSearchParams |
 | `/register` | `app/(customer)/register/page.jsx` | Clerk `<SignUp>` |
 | `/admin/login` | `app/admin/login/[[...rest]]/page.jsx` | Clerk `<SignIn>` with FreshMart styling, `signUpUrl` disabled |
+| `/welcome` | `app/welcome/page.jsx` | Onboarding carousel for signed-out users; lives outside `(customer)` group (no Navbar). Middleware redirects signed-out `/` → `/welcome` and signed-in `/welcome` → `/` |
 
 ## Components Built
 | Component | Type | Purpose |
@@ -106,6 +107,8 @@ app/
 | `CategoryFilter` | Server | Horizontal pill links for category filtering |
 | `SortSelect` | Client | Sort dropdown (wrap in `<Suspense>` when used in Server Component) |
 | `ProductCard` | Client | Product tile with add-to-cart stepper + wishlist toggle |
+| `WelcomeScreen` | Client | Onboarding screen: 3-slide carousel (auto-advance, swipe, dots), Log in / Sign up CTAs |
+| `welcome/illustrations` | Presentational | Inline SVG slide illustrations (basket, delivery, freshness) in fm palette |
 
 ## Cart Store (`store/cart.js`)
 `addToCart({ productId, variantId, name, price, unit, imageUrl, stockQty })`

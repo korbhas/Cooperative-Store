@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingBag, Package, ChevronRight } from 'lucide-react'
+import { IconShoppingBag, IconPackage, IconChevronRight } from '@tabler/icons-react'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
@@ -55,7 +55,7 @@ export default async function OrdersPage() {
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             minHeight: '40vh', gap: 16, textAlign: 'center',
           }}>
-            <ShoppingBag size={48} color="var(--color-fm-ink3)" />
+            <IconShoppingBag size={48} color="var(--color-fm-ink3)" />
             <div style={{ fontFamily: 'var(--font-sans)', fontSize: 16, fontWeight: 600, color: 'var(--color-fm-ink)' }}>
               No orders yet
             </div>
@@ -129,7 +129,7 @@ function OrderCard({ order }) {
             <Image src={order.thumbUrl} alt="" fill style={{ objectFit: 'cover' }} />
           ) : (
             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Package size={22} color="var(--color-fm-ink3)" />
+              <IconPackage size={22} color="var(--color-fm-ink3)" />
             </div>
           )}
         </div>
@@ -153,7 +153,7 @@ function OrderCard({ order }) {
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
             ₹{order.totalAmount.toFixed(2)}
           </div>
-          <ChevronRight size={16} color="var(--color-fm-ink3)" />
+          <IconChevronRight size={16} color="var(--color-fm-ink3)" />
         </div>
       </div>
     </Link>

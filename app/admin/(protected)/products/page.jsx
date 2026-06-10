@@ -1,20 +1,25 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Plus, Pencil, Trash2, Search } from 'lucide-react'
+import { IconPlus, IconPencil, IconTrash, IconSearch, IconUpload } from '@tabler/icons-react'
 import toast from 'react-hot-toast'
 import ProductDialog from './ProductDialog'
+import ImportCsvDialog from './ImportCsvDialog'
+import PageLoader from '@/components/PageLoader'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const btnStyle = (variant = 'primary') => ({
   display: 'inline-flex', alignItems: 'center', gap: 6,
-  padding: '8px 14px', borderRadius: 8, border: 'none',
+  padding: '8px 14px', borderRadius: 8,
   fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600,
   cursor: 'pointer',
   ...(variant === 'primary'
-    ? { background: 'var(--color-fm-green)', color: '#fff' }
+    ? { background: 'var(--color-fm-green)', color: '#fff', border: 'none' }
+    : variant === 'secondary'
+    ? { background: '#fff', color: 'var(--color-fm-green)', border: '1.5px solid var(--color-fm-green)' }
     : variant === 'ghost'
-    ? { background: 'transparent', color: 'var(--color-fm-ink3)', padding: '6px 8px' }
-    : { background: '#fee2e2', color: '#991b1b', padding: '6px 8px' }),
+    ? { background: 'transparent', color: 'var(--color-fm-ink3)', border: 'none', padding: '6px 8px' }
+    : { background: '#fee2e2', color: '#991b1b', border: 'none', padding: '6px 8px' }),
 })
 
 export default function ProductsPage() {
@@ -26,6 +31,7 @@ export default function ProductsPage() {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editProduct, setEditProduct] = useState(null)
+  const [importOpen, setImportOpen] = useState(false)
 
   const fetchProducts = useCallback(async () => {
     setLoading(true)
@@ -62,24 +68,45 @@ export default function ProductsPage() {
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--color-fm-ink)', margin: 0 }}>Products</h1>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', margin: '4px 0 0' }}>{products.length} product{products.length !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={openAdd} style={btnStyle('primary')}><Plus size={15} /> Add Product</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => setImportOpen(true)} style={btnStyle('secondary')}><IconUpload size={15} /> Import CSV</button>
+          <button onClick={openAdd} style={btnStyle('primary')}><IconPlus size={15} /> Add Product</button>
+        </div>
       </div>
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1.5px solid var(--color-fm-line-soft)', borderRadius: 8, padding: '0 12px', background: '#fff', height: 38 }}>
-          <Search size={14} color="var(--color-fm-ink3)" />
+          <IconSearch size={14} color="var(--color-fm-ink3)" />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search products…" style={{ border: 'none', outline: 'none', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: 'transparent', width: 200 }} />
         </div>
-        <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} style={{ padding: '0 12px', height: 38, borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', outline: 'none' }}>
-          <option value="">All categories</option>
-          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <select value={status} onChange={e => setStatus(e.target.value)} style={{ padding: '0 12px', height: 38, borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', outline: 'none' }}>
-          <option value="">All status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+        <Select
+          value={categoryFilter === '' ? '__all' : String(categoryFilter)}
+          onValueChange={val => setCategoryFilter(val === '__all' ? '' : val)}
+        >
+          <SelectTrigger className="h-[38px] w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all">All categories</SelectItem>
+            {categories.map(c => (
+              <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={status === '' ? '__all' : status}
+          onValueChange={val => setStatus(val === '__all' ? '' : val)}
+        >
+          <SelectTrigger className="h-[38px] w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all">All status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -94,7 +121,7 @@ export default function ProductsPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} style={{ padding: 32, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)' }}>Loading…</td></tr>
+              <tr><td colSpan={8} style={{ padding: 32 }}><PageLoader label="Loading products…" className="py-0" /></td></tr>
             ) : products.length === 0 ? (
               <tr><td colSpan={8} style={{ padding: 32, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)' }}>No products found</td></tr>
             ) : products.map((p, i) => (
@@ -122,8 +149,8 @@ export default function ProductsPage() {
                 </td>
                 <td style={{ padding: '10px 14px' }}>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    <button onClick={() => openEdit(p)} style={btnStyle('ghost')} title="Edit"><Pencil size={14} /></button>
-                    <button onClick={() => handleDelete(p.id, p.name)} style={btnStyle('danger')} title="Delete"><Trash2 size={14} /></button>
+                    <button onClick={() => openEdit(p)} style={btnStyle('ghost')} title="Edit" aria-label={`Edit ${p.name}`}><IconPencil size={14} /></button>
+                    <button onClick={() => handleDelete(p.id, p.name)} style={btnStyle('danger')} title="Delete" aria-label={`Delete ${p.name}`}><IconTrash size={14} /></button>
                   </div>
                 </td>
               </tr>
@@ -138,6 +165,11 @@ export default function ProductsPage() {
         product={editProduct}
         categories={categories}
         onSaved={fetchProducts}
+      />
+      <ImportCsvDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={fetchProducts}
       />
     </div>
   )

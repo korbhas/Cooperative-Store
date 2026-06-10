@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
+import { IconPlus, IconPencil, IconTrash, IconChevronUp, IconChevronDown } from '@tabler/icons-react'
 import toast from 'react-hot-toast'
 
 const inputStyle = { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', outline: 'none', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', boxSizing: 'border-box' }
@@ -91,7 +91,7 @@ export default function CategoriesPage() {
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', margin: '4px 0 0' }}>{categories.length} categories</p>
         </div>
         <button onClick={() => { setEditCat(null); setDialogOpen(true) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: 'none', background: 'var(--color-fm-green)', color: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-          <Plus size={15} /> Add Category
+          <IconPlus size={15} /> Add Category
         </button>
       </div>
 
@@ -111,8 +111,8 @@ export default function CategoriesPage() {
               <tr key={c.id} style={{ borderTop: i > 0 ? '1px solid var(--color-fm-line-soft)' : undefined }}>
                 <td style={{ padding: '10px 16px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <button onClick={() => handleReorder(c.id, 'up')} disabled={i === 0} style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: i === 0 ? 'var(--color-fm-line-soft)' : 'var(--color-fm-ink3)', padding: 2, display: 'flex' }}><ChevronUp size={14} /></button>
-                    <button onClick={() => handleReorder(c.id, 'down')} disabled={i === categories.length - 1} style={{ background: 'none', border: 'none', cursor: i === categories.length - 1 ? 'default' : 'pointer', color: i === categories.length - 1 ? 'var(--color-fm-line-soft)' : 'var(--color-fm-ink3)', padding: 2, display: 'flex' }}><ChevronDown size={14} /></button>
+                    <button onClick={() => handleReorder(c.id, 'up')} disabled={i === 0} aria-label={`Move ${c.name} up`} style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: i === 0 ? 'var(--color-fm-line-soft)' : 'var(--color-fm-ink3)', padding: 2, display: 'flex' }}><IconChevronUp size={14} /></button>
+                    <button onClick={() => handleReorder(c.id, 'down')} disabled={i === categories.length - 1} aria-label={`Move ${c.name} down`} style={{ background: 'none', border: 'none', cursor: i === categories.length - 1 ? 'default' : 'pointer', color: i === categories.length - 1 ? 'var(--color-fm-line-soft)' : 'var(--color-fm-ink3)', padding: 2, display: 'flex' }}><IconChevronDown size={14} /></button>
                   </div>
                 </td>
                 <td style={{ padding: '10px 16px', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', fontWeight: 500 }}>{c.name}</td>
@@ -122,8 +122,8 @@ export default function CategoriesPage() {
                 </td>
                 <td style={{ padding: '10px 16px' }}>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    <button onClick={() => { setEditCat(c); setDialogOpen(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', padding: 4, display: 'flex' }}><Pencil size={14} /></button>
-                    <button onClick={() => handleDelete(c.id, c.name, c.productCount)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', padding: 4, display: 'flex' }}><Trash2 size={14} /></button>
+                    <button onClick={() => { setEditCat(c); setDialogOpen(true) }} aria-label={`Edit category ${c.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', padding: 4, display: 'flex' }}><IconPencil size={14} /></button>
+                    <button onClick={() => handleDelete(c.id, c.name, c.productCount)} aria-label={`Delete category ${c.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', padding: 4, display: 'flex' }}><IconTrash size={14} /></button>
                   </div>
                 </td>
               </tr>

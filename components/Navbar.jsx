@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ShoppingCart, ClipboardList, LogOut, User, Home, Tag, Settings } from 'lucide-react'
+import { IconShoppingCart, IconClipboardList, IconLogout, IconUser, IconHome, IconTag, IconSettings } from '@tabler/icons-react'
 import { useCartStore } from '@/store/cart'
 import { useUser, useClerk } from '@clerk/nextjs'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 const NavSearch = dynamic(() => import('@/components/NavSearch'), {
   ssr: false,
@@ -14,9 +15,9 @@ const NavSearch = dynamic(() => import('@/components/NavSearch'), {
 })
 
 const NAV_ITEMS = [
-  { icon: Home, label: 'Home', href: '/' },
-  { icon: Tag, label: 'Products', href: '/products' },
-  { icon: Settings, label: 'Settings', href: '/settings' },
+  { icon: IconHome, label: 'Home', href: '/' },
+  { icon: IconTag, label: 'Products', href: '/products' },
+  { icon: IconSettings, label: 'Settings', href: '/settings' },
 ]
 
 export default function Navbar() {
@@ -38,7 +39,6 @@ export default function Navbar() {
   }
 
   const displayName = user?.fullName || user?.firstName || user?.primaryEmailAddress?.emailAddress || 'User'
-  const displayInitial = displayName.charAt(0).toUpperCase()
   const displayEmail = user?.primaryEmailAddress?.emailAddress
 
   return (
@@ -101,7 +101,7 @@ export default function Navbar() {
               fontFamily: 'var(--font-sans)', fontSize: 13,
               fontWeight: pathname === '/orders' ? 600 : 400, textDecoration: 'none',
             }}>
-              <ClipboardList size={14} />Orders
+              <IconClipboardList size={14} />Orders
             </Link>
 
             <Link href="/cart" style={{
@@ -111,7 +111,7 @@ export default function Navbar() {
               textDecoration: 'none', position: 'relative',
             }}>
               <div style={{ position: 'relative' }}>
-                <ShoppingCart size={16} />
+                <IconShoppingCart size={16} />
                 {mounted && totalItems > 0 && (
                   <span style={{
                     position: 'absolute', top: -6, right: -6,
@@ -128,15 +128,12 @@ export default function Navbar() {
             <div style={{ width: 1, height: 20, background: 'var(--color-fm-line-soft)', margin: '0 4px' }} />
 
             <div className="hidden sm:flex" style={{ alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%',
-                background: 'var(--color-fm-green-soft)',
-                border: '1.5px solid var(--color-fm-green-ink)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 700, color: 'var(--color-fm-green-ink)',
-              }}>
-                {displayInitial}
-              </div>
+              <Avatar>
+                <AvatarImage src={user?.imageUrl} alt={displayName} />
+                <AvatarFallback>
+                  <IconUser className="opacity-60" size={16} stroke={2} aria-hidden="true" />
+                </AvatarFallback>
+              </Avatar>
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
                 <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600, color: 'var(--color-fm-ink)' }}>
                   {displayName}
@@ -155,7 +152,7 @@ export default function Navbar() {
               background: 'transparent', border: 'none',
               color: 'var(--color-fm-ink3)', cursor: 'pointer',
             }}>
-              <LogOut size={14} />
+              <IconLogout size={14} />
             </button>
           </>
         ) : (
@@ -166,7 +163,7 @@ export default function Navbar() {
               color: 'var(--color-fm-ink2)', textDecoration: 'none', position: 'relative',
             }}>
               <div style={{ position: 'relative' }}>
-                <ShoppingCart size={16} />
+                <IconShoppingCart size={16} />
                 {mounted && totalItems > 0 && (
                   <span style={{
                     position: 'absolute', top: -6, right: -6,
@@ -185,7 +182,7 @@ export default function Navbar() {
               fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 500,
               textDecoration: 'none',
             }}>
-              <User size={13} />Sign In
+              <IconUser size={13} />Sign In
             </Link>
           </>
         )}

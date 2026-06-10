@@ -1,5 +1,5 @@
 import { SignIn } from '@clerk/nextjs'
-import { ShieldCheck } from 'lucide-react'
+import { IconShieldCheck } from '@tabler/icons-react'
 
 const appearance = {
   variables: {
@@ -92,7 +92,7 @@ export default async function AdminLoginPage({ searchParams }) {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             marginBottom: 14,
           }}>
-            <ShieldCheck size={24} color="#fff" strokeWidth={2} />
+            <IconShieldCheck size={24} color="#fff" stroke={2} />
           </div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
             Admin Portal

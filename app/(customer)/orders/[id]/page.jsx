@@ -1,13 +1,15 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { CheckCircle2, MapPin, CreditCard, Package, ShoppingBag, ChevronRight } from 'lucide-react'
+import { IconCircleCheck, IconMapPin, IconCreditCard, IconPackage, IconShoppingBag, IconChevronRight } from '@tabler/icons-react'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
-export default async function OrderDetailPage({ params }) {
+export default async function OrderDetailPage({ params, searchParams }) {
   const { userId } = await auth()
   const { id } = await params
+  const { paid } = await searchParams
 
   if (!userId) {
     redirect(`/login?returnTo=/orders/${id}`)
@@ -64,9 +66,28 @@ export default async function OrderDetailPage({ params }) {
   const subtotal = order.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0)
   const deliveryFee = order.totalAmount - subtotal + order.discountAmount
 
+  const justPaid = paid === '1' && order.payment?.status === 'captured'
+
   return (
     <div style={{ flex: 1, background: 'var(--color-fm-paper)' }}>
       <div style={{ maxWidth: 960, width: '100%', margin: '0 auto', padding: '24px 16px 48px' }}>
+
+        {justPaid && (
+          <Alert
+            className="mb-5"
+            style={{
+              background: 'var(--color-fm-green-soft)',
+              borderColor: 'var(--color-fm-green-ink)',
+              color: 'var(--color-fm-green-ink)',
+            }}
+          >
+            <IconCircleCheck />
+            <AlertTitle>Payment successful</AlertTitle>
+            <AlertDescription style={{ color: 'var(--color-fm-ink2)' }}>
+              Your payment of ₹{order.totalAmount.toFixed(2)} has been processed and your order is confirmed.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Header */}
         <div style={{
@@ -74,7 +95,7 @@ export default async function OrderDetailPage({ params }) {
           flexWrap: 'wrap', gap: 12, marginBottom: 24,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <CheckCircle2 size={28} color="var(--color-fm-green-ink)" />
+            <IconCircleCheck size={28} color="var(--color-fm-green-ink)" />
             <div>
               <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
                 Order #{order.id}
@@ -91,7 +112,7 @@ export default async function OrderDetailPage({ params }) {
 
           {/* Left — items */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <Section title="Items" icon={<Package size={14} />}>
+            <Section title="Items" icon={<IconPackage size={14} />}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {order.items.map((item, i) => (
                   <ItemRow key={item.id} item={item} last={i === order.items.length - 1} />
@@ -127,7 +148,7 @@ export default async function OrderDetailPage({ params }) {
               </Section>
 
               {/* Delivery address */}
-              <Section title="Delivery Address" icon={<MapPin size={14} />}>
+              <Section title="Delivery Address" icon={<IconMapPin size={14} />}>
                 <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', lineHeight: 1.6 }}>
                   {order.deliveryAddress}
                 </div>
@@ -140,7 +161,7 @@ export default async function OrderDetailPage({ params }) {
 
               {/* Payment */}
               {order.payment && (
-                <Section title="Payment" icon={<CreditCard size={14} />}>
+                <Section title="Payment" icon={<IconCreditCard size={14} />}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     <SummaryRow
                       label="Status"
@@ -177,7 +198,7 @@ export default async function OrderDetailPage({ params }) {
             fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 500,
             textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
           }}>
-            <ShoppingBag size={14} /> Continue Shopping
+            <IconShoppingBag size={14} /> Continue Shopping
           </Link>
           <Link href="/orders" style={{
             padding: '10px 20px', borderRadius: 8,
@@ -259,7 +280,7 @@ function ItemRow({ item, last }) {
           <Image src={item.imageUrl} alt={item.productName} fill style={{ objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Package size={20} color="var(--color-fm-ink3)" />
+            <IconPackage size={20} color="var(--color-fm-ink3)" />
           </div>
         )}
       </div>

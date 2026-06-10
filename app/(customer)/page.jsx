@@ -1,22 +1,37 @@
 import Link from 'next/link'
+import { unstable_cache } from 'next/cache'
+import { cookies } from 'next/headers'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import PromoBanners from '@/components/PromoBanners'
 import BottomNav from '@/components/BottomNav'
+import WelcomeOverlay, { WELCOME_SEEN_COOKIE } from '@/components/welcome/WelcomeOverlay'
+import { welcomeIllustrations } from '@/components/welcome/illustrations'
 import { CATEGORY_EMOJIS } from '@/lib/config'
 
-async function getCategories() {
-  try {
-    return await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } })
-  } catch {
-    return []
-  }
-}
+const getCategories = unstable_cache(
+  async () => {
+    try {
+      return await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } })
+    } catch {
+      return []
+    }
+  },
+  ['categories'],
+  { revalidate: 3600, tags: ['categories'] }
+)
 
 export default async function HomePage() {
-  const categories = await getCategories()
+  const [categories, { userId }, cookieStore] = await Promise.all([
+    getCategories(),
+    auth(),
+    cookies(),
+  ])
+  const showWelcome = !userId && !cookieStore.has(WELCOME_SEEN_COOKIE)
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--color-fm-paper)' }}>
+      {showWelcome && <WelcomeOverlay illustrations={welcomeIllustrations()} />}
       <main className="pb-20 md:pb-8" style={{ padding: '24px 16px', maxWidth: 960, width: '100%', margin: '0 auto' }}>
 
         <PromoBanners />

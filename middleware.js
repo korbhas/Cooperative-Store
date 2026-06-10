@@ -29,6 +29,12 @@ export default clerkMiddleware(async (auth, request) => {
     return NextResponse.next()
   }
 
+  // Onboarding: home renders for everyone (crawler-friendly); first-visit
+  // welcome overlay is handled in app/(customer)/page.jsx via cookie.
+  if (pathname === '/welcome' && userId) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
   // Customer routes — Clerk auth
   const isProtected = CUSTOMER_PROTECTED.some((r) => pathname.startsWith(r))
   if (isProtected && !userId) {

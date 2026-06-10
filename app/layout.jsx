@@ -1,6 +1,13 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/react'
+import { JetBrains_Mono } from 'next/font/google'
 import './globals.css'
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-jbmono',
+})
 
 export const metadata = {
   title: 'FreshMart',
@@ -10,7 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en" className="h-full">
+      <html lang="en" className={`h-full ${jetbrainsMono.variable}`}>
         <body style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
           {children}
           <Analytics />

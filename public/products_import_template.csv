@@ -1,0 +1,5 @@
+sku,name,description,category,price,unit,stock_qty,image_url,is_active,variant_name,variant_price,variant_stock_qty
+APPLE-RED-001,Red Apple,Fresh red apples from Kashmir,Fruits & Vegetables,80,kg,200,,true,,,
+MILK-AMUL-001,Amul Milk,Fresh pasteurised full-cream milk,Dairy,0,piece,0,,true,500ml,25,100
+MILK-AMUL-001,Amul Milk,,,,,,,,1L,45,50
+RICE-BAG-001,Basmati Rice,Premium aged basmati rice,Staples,120,kg,500,,true,,,

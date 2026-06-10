@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Search, X } from 'lucide-react'
+import { IconSearch, IconX } from '@tabler/icons-react'
 
 export default function NavSearch() {
   const pathname = usePathname()
@@ -36,7 +36,7 @@ export default function NavSearch() {
         background: '#fff', border: '1.5px solid var(--color-fm-line-soft)',
         borderRadius: 8, padding: '0 10px', height: 32, width: '100%', maxWidth: 280,
       }}>
-        <Search size={13} style={{ color: 'var(--color-fm-ink3)', flexShrink: 0 }} />
+        <IconSearch size={13} style={{ color: 'var(--color-fm-ink3)', flexShrink: 0 }} />
         <input
           value={inputVal}
           onChange={(e) => handleSearch(e.target.value)}
@@ -48,8 +48,8 @@ export default function NavSearch() {
           }}
         />
         {inputVal && (
-          <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', padding: 0, display: 'flex' }}>
-            <X size={13} />
+          <button onClick={() => handleSearch('')} aria-label="Clear search" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', padding: 0, display: 'flex' }}>
+            <IconX size={13} />
           </button>
         )}
       </div>

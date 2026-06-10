@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Pencil, X } from 'lucide-react'
+import { IconPencil, IconX } from '@tabler/icons-react'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const inputStyle = { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', outline: 'none', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', boxSizing: 'border-box' }
 const labelStyle = { display: 'block', fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600, color: 'var(--color-fm-ink3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 5 }
@@ -26,17 +27,23 @@ function EditDialog({ user, onClose, onSaved }) {
       <div style={{ position: 'relative', background: '#fff', borderRadius: 14, width: '100%', maxWidth: 420, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
         <div style={{ padding: '18px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>Edit User</div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><X size={18} /></button>
+          <button onClick={onClose} aria-label="Close dialog" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><IconX size={18} /></button>
         </div>
         <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)' }}>{user.email}</div>
           <div><label style={labelStyle}>Name</label><input style={inputStyle} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
           <div><label style={labelStyle}>Phone</label><input style={inputStyle} value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} /></div>
-          <div><label style={labelStyle}>Role</label>
-            <select style={inputStyle} value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
-            </select>
+          <div>
+            <label style={labelStyle}>Role</label>
+            <Select value={form.role} onValueChange={val => setForm(f => ({ ...f, role: val }))}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="customer">Customer</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <input type="checkbox" id="isBanned" checked={form.isBanned} onChange={e => setForm(f => ({ ...f, isBanned: e.target.checked }))} style={{ width: 16, height: 16, accentColor: '#dc2626' }} />
@@ -96,7 +103,7 @@ export default function UsersClient({ initialUsers }) {
                   {new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </td>
                 <td style={{ padding: '10px 14px' }}>
-                  <button onClick={() => setEditUser(u)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex', padding: 4 }}><Pencil size={14} /></button>
+                  <button onClick={() => setEditUser(u)} aria-label={`Edit user ${u.email}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex', padding: 4 }}><IconPencil size={14} /></button>
                 </td>
               </tr>
             ))}

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Tag } from 'lucide-react'
+import Image from 'next/image'
+import { IconMinus, IconPlus, IconTrash, IconShoppingCart, IconArrowRight, IconTag } from '@tabler/icons-react'
 import { useCartStore } from '@/store/cart'
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '@/lib/config'
+import PageLoader from '@/components/PageLoader'
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false)
@@ -19,7 +21,7 @@ export default function CartPage() {
   if (!mounted) {
     return (
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2.5px solid var(--color-fm-green)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+        <PageLoader label="Loading cart…" />
       </div>
     )
   }
@@ -36,7 +38,7 @@ export default function CartPage() {
           background: 'var(--color-fm-green-soft)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <ShoppingCart size={36} color="var(--color-fm-green)" />
+          <IconShoppingCart size={36} color="var(--color-fm-green)" />
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--color-fm-ink)', marginBottom: 6 }}>
@@ -53,7 +55,7 @@ export default function CartPage() {
           fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 500,
           textDecoration: 'none',
         }}>
-          Browse Products <ArrowRight size={15} />
+          Browse Products <IconArrowRight size={15} />
         </Link>
       </div>
     )
@@ -85,7 +87,7 @@ export default function CartPage() {
               cursor: 'pointer',
             }}
           >
-            <Trash2 size={13} /> Clear all
+            <IconTrash size={13} /> Clear all
           </button>
         </div>
 
@@ -129,7 +131,7 @@ export default function CartPage() {
                     fontFamily: 'var(--font-sans)', fontSize: 11,
                     color: 'var(--color-fm-accent)',
                   }}>
-                    <Tag size={11} />
+                    <IconTag size={11} />
                     Add ₹{(FREE_DELIVERY_THRESHOLD - subtotal).toFixed(0)} more for free delivery
                   </div>
                 )}
@@ -151,7 +153,7 @@ export default function CartPage() {
                 fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 600,
                 textDecoration: 'none',
               }}>
-                Proceed to Checkout <ArrowRight size={15} />
+                Proceed to Checkout <IconArrowRight size={15} />
               </Link>
 
               <Link href="/products" style={{
@@ -187,7 +189,7 @@ function CartItemRow({ item, onInc, onDec, onRemove }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <Image src={item.imageUrl} alt={item.name} width={60} height={60} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <span style={{ fontSize: 24 }}>🛒</span>
         )}
@@ -214,7 +216,7 @@ function CartItemRow({ item, onInc, onDec, onRemove }) {
 
       {/* Qty stepper */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-        <button onClick={onDec} style={{
+        <button onClick={onDec} aria-label="Decrease quantity" style={{
           width: 28, height: 28, borderRadius: 7,
           background: 'var(--color-fm-green-soft)',
           border: '1.5px solid var(--color-fm-green-ink)',
@@ -222,7 +224,7 @@ function CartItemRow({ item, onInc, onDec, onRemove }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', padding: 0,
         }}>
-          <Minus size={12} />
+          <IconMinus size={12} />
         </button>
         <span style={{
           fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 700,
@@ -230,13 +232,13 @@ function CartItemRow({ item, onInc, onDec, onRemove }) {
         }}>
           {item.quantity}
         </span>
-        <button onClick={onInc} style={{
+        <button onClick={onInc} aria-label="Increase quantity" style={{
           width: 28, height: 28, borderRadius: 7,
           background: 'var(--color-fm-green)', border: 'none', color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', padding: 0,
         }}>
-          <Plus size={12} />
+          <IconPlus size={12} />
         </button>
       </div>
 
@@ -245,12 +247,12 @@ function CartItemRow({ item, onInc, onDec, onRemove }) {
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
           ₹{subtotal % 1 === 0 ? subtotal : subtotal.toFixed(2)}
         </div>
-        <button onClick={onRemove} style={{
+        <button onClick={onRemove} aria-label={`Remove ${item.name} from cart`} style={{
           background: 'none', border: 'none', padding: 0,
           color: 'var(--color-fm-ink3)', cursor: 'pointer',
           display: 'flex', alignItems: 'center',
         }}>
-          <Trash2 size={13} />
+          <IconTrash size={13} />
         </button>
       </div>
     </div>

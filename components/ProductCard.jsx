@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, Plus, Minus } from 'lucide-react'
+import Image from 'next/image'
+import { IconHeart, IconPlus, IconMinus } from '@tabler/icons-react'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
 
@@ -60,15 +61,17 @@ export default function ProductCard({ product }) {
       <div style={{ position: 'relative' }}>
         <Link href={`/products/${product.id}`} style={{ display: 'block', textDecoration: 'none' }}>
           <div style={{
-            aspectRatio: '1 / 1', overflow: 'hidden',
+            position: 'relative', aspectRatio: '1 / 1', overflow: 'hidden',
             background: product.imageUrl ? 'var(--color-fm-paper)' : bgColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             {product.imageUrl ? (
-              <img
+              <Image
                 src={product.imageUrl}
                 alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 192px"
+                style={{ objectFit: 'cover' }}
               />
             ) : (
               <span style={{ fontSize: 34 }}>🛒</span>
@@ -79,6 +82,7 @@ export default function ProductCard({ product }) {
         {/* Wishlist */}
         <button
           onClick={(e) => { e.preventDefault(); toggle(product.id) }}
+          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           style={{
             position: 'absolute', top: 6, right: 6,
             width: 28, height: 28, borderRadius: '50%',
@@ -88,7 +92,7 @@ export default function ProductCard({ product }) {
             boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
           }}
         >
-          <Heart
+          <IconHeart
             size={13}
             fill={wishlisted ? 'var(--color-fm-accent)' : 'none'}
             color={wishlisted ? 'var(--color-fm-accent)' : 'var(--color-fm-ink3)'}
@@ -149,6 +153,7 @@ export default function ProductCard({ product }) {
             <button
               onClick={handleAdd}
               disabled={outOfStock}
+              aria-label="Add to cart"
               style={{
                 width: 32, height: 32, borderRadius: 8,
                 background: outOfStock ? 'var(--color-fm-line-soft)' : 'var(--color-fm-green)',
@@ -157,11 +162,11 @@ export default function ProductCard({ product }) {
                 cursor: outOfStock ? 'default' : 'pointer', flexShrink: 0,
               }}
             >
-              <Plus size={16} />
+              <IconPlus size={16} />
             </button>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <button onClick={handleDec} style={{
+              <button onClick={handleDec} aria-label="Decrease quantity" style={{
                 width: 26, height: 26, borderRadius: 7,
                 background: 'var(--color-fm-green-soft)',
                 border: '1.5px solid var(--color-fm-green-ink)',
@@ -169,7 +174,7 @@ export default function ProductCard({ product }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', padding: 0,
               }}>
-                <Minus size={12} />
+                <IconMinus size={12} />
               </button>
               <span style={{
                 fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 700,
@@ -177,13 +182,13 @@ export default function ProductCard({ product }) {
               }}>
                 {qty}
               </span>
-              <button onClick={handleInc} style={{
+              <button onClick={handleInc} aria-label="Increase quantity" style={{
                 width: 26, height: 26, borderRadius: 7,
                 background: 'var(--color-fm-green)', border: 'none', color: '#fff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', padding: 0,
               }}>
-                <Plus size={12} />
+                <IconPlus size={12} />
               </button>
             </div>
           )}

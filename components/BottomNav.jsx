@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Tag, Settings } from 'lucide-react'
+import { IconHome, IconShoppingBag } from '@tabler/icons-react'
 
 const NAV_ITEMS = [
-  { icon: Home, label: 'Home', href: '/' },
-  { icon: Tag, label: 'Offers', href: '/products' },
-  { icon: Settings, label: 'Settings', href: '/settings' },
+  { icon: IconHome, label: 'Home', href: '/' },
+  { icon: IconShoppingBag, label: 'Products', href: '/products' },
 ]
 
 export default function BottomNav() {

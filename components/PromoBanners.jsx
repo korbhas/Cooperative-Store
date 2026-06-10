@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { ArrowRight, Zap, Tag, Sparkles } from 'lucide-react'
+import { IconArrowRight, IconBolt, IconTag, IconSparkles } from '@tabler/icons-react'
 
 const banners = [
   {
     id: 1,
     label: 'Flash Sale',
-    Icon: Zap,
+    Icon: IconBolt,
     title: 'Fresh Fruits & Veggies',
     subtitle: 'Up to 30% off today',
     cta: 'Shop Now',
@@ -16,7 +16,7 @@ const banners = [
   {
     id: 2,
     label: 'Free Delivery',
-    Icon: Tag,
+    Icon: IconTag,
     title: 'Orders above ₹299',
     subtitle: 'No delivery charges, ever',
     cta: 'Order Now',
@@ -27,7 +27,7 @@ const banners = [
   {
     id: 3,
     label: 'New In',
-    Icon: Sparkles,
+    Icon: IconSparkles,
     title: 'Snacks & Beverages',
     subtitle: 'New arrivals every week',
     cta: 'Explore',
@@ -56,7 +56,7 @@ export default function PromoBanners() {
             <h3 className="text-lg font-extrabold leading-tight">{title}</h3>
             <p className="mt-0.5 text-sm text-white/70">{subtitle}</p>
             <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-white/90">
-              {cta} <ArrowRight size={14} />
+              {cta} <IconArrowRight size={14} />
             </span>
           </div>
         </Link>

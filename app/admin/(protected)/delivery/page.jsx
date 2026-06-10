@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, X } from 'lucide-react'
+import { IconPlus, IconPencil, IconTrash, IconX } from '@tabler/icons-react'
 import toast from 'react-hot-toast'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const inputStyle = { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', outline: 'none', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', boxSizing: 'border-box' }
 const labelStyle = { display: 'block', fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600, color: 'var(--color-fm-ink3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 5 }
@@ -34,15 +35,23 @@ function AgentDialog({ open, onClose, agent, onSaved }) {
       <div style={{ position: 'relative', background: '#fff', borderRadius: 14, width: '100%', maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
         <div style={{ padding: '18px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>{isEdit ? 'Edit Agent' : 'Add Agent'}</div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><X size={18} /></button>
+          <button onClick={onClose} aria-label="Close dialog" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><IconX size={18} /></button>
         </div>
         <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div><label style={labelStyle}>Name</label><input style={inputStyle} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
           <div><label style={labelStyle}>Phone</label><input style={inputStyle} value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} /></div>
-          <div><label style={labelStyle}>Vehicle Type</label>
-            <select style={inputStyle} value={form.vehicleType} onChange={e => setForm(f => ({ ...f, vehicleType: e.target.value }))}>
-              {['bike', 'scooter', 'car', 'van'].map(v => <option key={v} value={v}>{v}</option>)}
-            </select>
+          <div>
+            <label style={labelStyle}>Vehicle Type</label>
+            <Select value={form.vehicleType} onValueChange={val => setForm(f => ({ ...f, vehicleType: val }))}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {['bike', 'scooter', 'car', 'van'].map(v => (
+                  <SelectItem key={v} value={v}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <input type="checkbox" id="agentActive" checked={form.isActive} onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))} style={{ width: 16, height: 16, accentColor: 'var(--color-fm-green)' }} />
@@ -77,10 +86,20 @@ function AssignDialog({ order, agents, onClose, onSaved }) {
         <div style={{ padding: '18px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>Assign Delivery Agent</div>
         <div style={{ padding: 24 }}>
           <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)', marginBottom: 10 }}>Order #{order.id} · ₹{order.totalAmount.toFixed(2)}</div>
-          <select style={inputStyle} value={agentId} onChange={e => setAgentId(e.target.value)}>
-            <option value="">Unassigned</option>
-            {agents.map(a => <option key={a.id} value={a.id}>{a.name} ({a.vehicleType})</option>)}
-          </select>
+          <Select
+            value={agentId === '' ? '__unassigned' : String(agentId)}
+            onValueChange={val => setAgentId(val === '__unassigned' ? '' : val)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__unassigned">Unassigned</SelectItem>
+              {agents.map(a => (
+                <SelectItem key={a.id} value={String(a.id)}>{a.name} ({a.vehicleType})</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div style={{ padding: '14px 24px', borderTop: '1.5px solid var(--color-fm-line-soft)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
           <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', background: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
@@ -127,7 +146,7 @@ export default function DeliveryPage() {
         </div>
         {tab === 'agents' && (
           <button onClick={() => { setEditAgent(null); setDialogOpen(true) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, border: 'none', background: 'var(--color-fm-green)', color: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            <Plus size={15} /> Add Agent
+            <IconPlus size={15} /> Add Agent
           </button>
         )}
       </div>
@@ -163,8 +182,8 @@ export default function DeliveryPage() {
                     </td>
                     <td style={{ padding: '10px 16px' }}>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button onClick={() => { setEditAgent(a); setDialogOpen(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex', padding: 4 }}><Pencil size={14} /></button>
-                        <button onClick={() => handleDeleteAgent(a.id, a.name)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', display: 'flex', padding: 4 }}><Trash2 size={14} /></button>
+                        <button onClick={() => { setEditAgent(a); setDialogOpen(true) }} aria-label={`Edit agent ${a.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex', padding: 4 }}><IconPencil size={14} /></button>
+                        <button onClick={() => handleDeleteAgent(a.id, a.name)} aria-label={`Delete agent ${a.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', display: 'flex', padding: 4 }}><IconTrash size={14} /></button>
                       </div>
                     </td>
                   </tr>
