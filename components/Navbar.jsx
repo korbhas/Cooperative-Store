@@ -80,6 +80,13 @@ export default function Navbar() {
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname.startsWith(href))
 
   const displayName = user?.fullName || user?.firstName || user?.primaryEmailAddress?.emailAddress || 'User'
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
 
   async function handleLogout() {
     await signOut()
@@ -213,25 +220,6 @@ export default function Navbar() {
               {STORE_PHONE}
             </a>
 
-            {/* Cart */}
-            <CartDrawer>
-              <button
-                type="button"
-                aria-label="Cart"
-                className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
-              >
-                <IconShoppingCart className="size-4" />
-                {mounted && totalItems > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                    style={{ background: 'var(--color-fm-accent)' }}
-                  >
-                    {totalItems}
-                  </span>
-                )}
-              </button>
-            </CartDrawer>
-
             {/* Auth — desktop */}
             {signedIn ? (
               <DropdownMenu>
@@ -242,7 +230,7 @@ export default function Navbar() {
                   <Avatar className="size-9">
                     <AvatarImage src={user?.imageUrl} alt={displayName} />
                     <AvatarFallback>
-                      <IconUser className="size-4 opacity-60" aria-hidden="true" />
+                      {initials || <IconUser className="size-4 opacity-60" aria-hidden="true" />}
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -269,6 +257,24 @@ export default function Navbar() {
               </Link>
             )}
 
+            {/* Cart */}
+            <CartDrawer>
+              <button
+                type="button"
+                aria-label="Cart"
+                className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
+              >
+                <IconShoppingCart className="size-4" />
+                {mounted && totalItems > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{ background: 'var(--color-fm-accent)' }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </CartDrawer>
           </div>
         </nav>
       </div>
