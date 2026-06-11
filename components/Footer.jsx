@@ -14,19 +14,12 @@ export default function Footer() {
     <footer className="w-full" style={{ background: 'var(--color-fm-paper2)' }}>
       <div className="mx-auto w-full max-w-6xl px-4 py-6">
         <div className="flex w-full flex-row flex-wrap items-center justify-center gap-x-12 gap-y-3 text-center md:justify-between">
-          <Link href="/" className="flex shrink-0 items-center gap-2">
-            <span
-              className="flex size-7 items-center justify-center rounded-lg text-[10px] font-extrabold text-white"
-              style={{ background: 'var(--color-fm-accent)', fontFamily: 'var(--font-heading)' }}
-            >
-              FM
-            </span>
-            <span
-              className="text-[15px] font-bold"
-              style={{ color: 'var(--color-fm-green)', fontFamily: 'var(--font-heading)' }}
-            >
-              FreshMart
-            </span>
+          <Link
+            href="/"
+            className="shrink-0 text-[15px] font-bold"
+            style={{ color: 'var(--color-fm-green)', fontFamily: 'var(--font-heading)' }}
+          >
+            FreshMart
           </Link>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {LINKS.map(({ title, href }) => (
