@@ -53,9 +53,9 @@ export default function PromoBanners() {
             </span>
           </div>
           <div className="mt-8">
-            <h3 className="text-lg font-extrabold leading-tight">{title}</h3>
+            <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">{title}</h3>
             <p className="mt-0.5 text-sm text-white/70">{subtitle}</p>
-            <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-white/90">
+            <span className="mt-3 inline-flex items-center gap-1 text-sm leading-none font-medium text-white/90">
               {cta} <IconArrowRight size={14} />
             </span>
           </div>

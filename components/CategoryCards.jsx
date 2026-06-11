@@ -15,16 +15,14 @@ export default function CategoryCards({ categories }) {
   return (
     <section ref={sectionRef} className="flex w-full flex-col gap-5">
       {/* Header */}
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-end justify-between gap-4 border-b pb-2">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
           transition={{ duration: 0.5, ease: EASE }}
         >
-          <div className="mb-1.5 font-mono text-[10px] tracking-[1.5px] text-muted-foreground uppercase">
-            What are you looking for?
-          </div>
-          <h2 className="font-heading text-[22px] leading-none font-bold text-foreground">
+          <p className="text-sm text-muted-foreground">What are you looking for?</p>
+          <h2 className="mt-1 scroll-m-20 text-3xl font-semibold tracking-tight">
             Shop by Category
           </h2>
         </motion.div>
@@ -36,7 +34,7 @@ export default function CategoryCards({ categories }) {
         >
           <Link
             href="/products"
-            className="group flex items-center gap-1.5 text-sm font-medium whitespace-nowrap text-secondary-foreground transition-all hover:opacity-80"
+            className="group flex items-center gap-1.5 text-sm leading-none font-medium whitespace-nowrap text-secondary-foreground transition-all hover:opacity-80"
           >
             See all
             <IconArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -74,10 +72,10 @@ export default function CategoryCards({ categories }) {
 
               {/* Content Container */}
               <div className="min-w-0 flex-1 px-4 py-3">
-                <p className="truncate text-sm font-semibold text-foreground">
+                <p className="truncate text-sm leading-none font-medium text-foreground">
                   {category.name}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="mt-1.5 text-sm text-muted-foreground">
                   {category.count} item{category.count === 1 ? '' : 's'}
                 </p>
               </div>
