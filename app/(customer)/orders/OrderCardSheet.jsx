@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { IconPackage, IconChevronRight } from '@tabler/icons-react'
+import OrderStatusTimeline from '@/components/OrderStatusTimeline'
 import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
@@ -105,12 +106,7 @@ export default function OrderCardSheet({ order }) {
         </SheetHeader>
 
         <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 pt-0">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Status</span>
-            <StatusBadge status={order.status} />
-          </div>
-
-          <Separator />
+          <OrderStatusTimeline status={order.status} createdAt={order.createdAt} defaultOpen />
 
           <div className="flex flex-col gap-3">
             <h4 className="text-sm font-semibold">Items</h4>
@@ -154,7 +150,7 @@ export default function OrderCardSheet({ order }) {
             href={`/orders/${order.id}`}
             className="mt-2 flex items-center justify-center rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
           >
-            Track Order
+            View Full Details
           </Link>
         </div>
       </SheetContent>

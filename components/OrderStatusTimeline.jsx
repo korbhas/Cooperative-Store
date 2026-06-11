@@ -41,8 +41,8 @@ function StatusPill({ status }) {
   )
 }
 
-export default function OrderStatusTimeline({ status, createdAt }) {
-  const [open, setOpen] = useState(false)
+export default function OrderStatusTimeline({ status, createdAt, defaultOpen = false, className }) {
+  const [open, setOpen] = useState(defaultOpen)
   const terminalBad = status === 'cancelled' || status === 'refunded'
   const currentIndex = FLOW.findIndex((s) => s.key === status)
 
@@ -50,7 +50,7 @@ export default function OrderStatusTimeline({ status, createdAt }) {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      className="mb-6 overflow-hidden rounded-xl border border-border bg-card"
+      className={cn('overflow-hidden rounded-xl border border-border bg-card', className)}
     >
       <CollapsibleTrigger className="flex w-full cursor-pointer items-center justify-between gap-3 px-4 py-3 text-left">
         <div className="flex flex-wrap items-center gap-2.5">

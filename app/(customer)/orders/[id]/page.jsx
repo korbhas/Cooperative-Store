@@ -6,7 +6,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import AddressCard from '@/components/AddressCard'
-import OrderStatusTimeline from './OrderStatusTimeline'
+import OrderStatusTimeline from '@/components/OrderStatusTimeline'
 
 export default async function OrderDetailPage({ params, searchParams }) {
   const { userId } = await auth()
@@ -113,7 +113,7 @@ export default async function OrderDetailPage({ params, searchParams }) {
           </div>
         </div>
 
-        <OrderStatusTimeline status={order.status} createdAt={order.createdAt} />
+        <OrderStatusTimeline status={order.status} createdAt={order.createdAt} className="mb-6" />
 
         <div className="flex flex-col md:flex-row gap-5">
 
