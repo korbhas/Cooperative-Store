@@ -1,8 +1,19 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useForm } from '@tanstack/react-form'
 import toast from 'react-hot-toast'
 import PageLoader from '@/components/PageLoader'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator,
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  InputGroup, InputGroupAddon, InputGroupInput, InputGroupText,
+} from '@/components/ui/input-group'
 
 const SECTIONS = [
   {
@@ -37,102 +48,88 @@ const SECTIONS = [
   },
 ]
 
-const inputBase = {
-  width: '100%',
-  padding: '9px 12px',
-  borderRadius: 8,
-  border: '1.5px solid var(--color-fm-line-soft)',
-  outline: 'none',
-  fontFamily: 'var(--font-sans)',
-  fontSize: 13,
-  color: 'var(--color-fm-ink)',
-  background: '#fff',
-  boxSizing: 'border-box',
-}
-const labelStyle = {
-  display: 'block',
-  fontFamily: 'var(--font-sans)',
-  fontSize: 11,
-  fontWeight: 600,
-  color: 'var(--color-fm-ink3)',
-  textTransform: 'uppercase',
-  letterSpacing: 0.5,
-  marginBottom: 5,
-}
+function SettingInput({ field, def }) {
+  const { key, type, placeholder, prefix } = def
+  const value = field.state.value ?? ''
 
-function Field({ field, value, onChange }) {
-  const { key, label, type, placeholder, prefix, hint } = field
-
-  const inputEl = type === 'textarea' ? (
-    <textarea
-      rows={3}
-      style={{ ...inputBase, resize: 'vertical' }}
-      value={value ?? ''}
-      onChange={e => onChange(key, e.target.value)}
-      placeholder={placeholder}
-    />
-  ) : prefix ? (
-    <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid var(--color-fm-line-soft)', borderRadius: 8, background: '#fff', overflow: 'hidden' }}>
-      <span style={{ padding: '9px 10px 9px 12px', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', borderRight: '1.5px solid var(--color-fm-line-soft)', background: '#f8fafc' }}>{prefix}</span>
-      <input
-        type={type}
-        style={{ ...inputBase, border: 'none', borderRadius: 0, flex: 1 }}
-        value={value ?? ''}
-        onChange={e => onChange(key, e.target.value)}
+  if (type === 'textarea') {
+    return (
+      <Textarea
+        id={`setting-${key}`}
+        name={field.name}
+        rows={3}
+        className="resize-y"
+        value={value}
+        onChange={(e) => field.handleChange(e.target.value)}
         placeholder={placeholder}
       />
-    </div>
-  ) : (
-    <input
-      type={type}
-      style={inputBase}
-      value={value ?? ''}
-      onChange={e => onChange(key, e.target.value)}
-      placeholder={placeholder}
-    />
-  )
+    )
+  }
+
+  if (prefix) {
+    return (
+      <InputGroup>
+        <InputGroupAddon>
+          <InputGroupText>{prefix}</InputGroupText>
+        </InputGroupAddon>
+        <InputGroupInput
+          id={`setting-${key}`}
+          name={field.name}
+          type={type}
+          value={value}
+          onChange={(e) => field.handleChange(e.target.value)}
+          placeholder={placeholder}
+        />
+      </InputGroup>
+    )
+  }
 
   return (
-    <div>
-      <label style={labelStyle}>{label}</label>
-      {inputEl}
-      {hint && <p style={{ margin: '4px 0 0', fontFamily: 'var(--font-sans)', fontSize: 11, color: 'var(--color-fm-ink3)' }}>{hint}</p>}
-    </div>
+    <Input
+      id={`setting-${key}`}
+      name={field.name}
+      type={type}
+      value={value}
+      onChange={(e) => field.handleChange(e.target.value)}
+      placeholder={placeholder}
+    />
   )
 }
 
 export default function SettingsPage() {
-  const [values, setValues] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const savedRef = useRef({})
 
+  const form = useForm({
+    defaultValues: {},
+    onSubmit: async ({ value }) => save(value),
+  })
+
+  const values = form.useStore((s) => s.values)
   const isDirty = JSON.stringify(values) !== JSON.stringify(savedRef.current)
 
   useEffect(() => {
     fetch('/api/admin/settings')
       .then(r => r.json())
       .then(data => {
-        setValues(data)
         savedRef.current = data
+        form.reset(data)
         setLoading(false)
       })
-  }, [])
+  }, [form])
 
-  function handleChange(key, val) {
-    setValues(v => ({ ...v, [key]: val }))
-  }
-
-  async function handleSave() {
+  async function save(value) {
     setSaving(true)
     try {
       const res = await fetch('/api/admin/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        body: JSON.stringify(value),
       })
       if (!res.ok) throw new Error()
-      savedRef.current = { ...values }
+      savedRef.current = { ...value }
+      form.reset(value)
       toast.success('Settings saved')
     } catch {
       toast.error('Failed to save settings')
@@ -142,53 +139,65 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 600 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+    <div className="flex max-w-xl flex-col gap-6">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--color-fm-ink)', margin: 0 }}>Settings</h1>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', margin: '4px 0 0' }}>Global store configuration</p>
+          <h1 className="font-heading text-[22px] font-bold">Settings</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Global store configuration</p>
         </div>
         {!loading && (
-          <button
-            onClick={handleSave}
+          <Button
+            type="submit"
+            form="settings-form"
             disabled={saving || !isDirty}
-            style={{
-              padding: '9px 20px',
-              borderRadius: 8,
-              border: 'none',
-              background: !isDirty ? 'var(--color-fm-green-soft)' : saving ? 'var(--color-fm-green-soft)' : 'var(--color-fm-green)',
-              color: !isDirty ? 'var(--color-fm-ink3)' : saving ? 'var(--color-fm-green-ink)' : '#fff',
-              fontFamily: 'var(--font-sans)',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: isDirty && !saving ? 'pointer' : 'default',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
+            className="shrink-0"
           >
             {saving ? 'Saving…' : isDirty ? 'Save Changes' : 'Saved'}
-          </button>
+          </Button>
         )}
       </div>
 
       {loading ? (
-        <div style={{ background: '#fff', borderRadius: 12, border: '1.5px solid var(--color-fm-line-soft)', padding: 32 }}>
-          <PageLoader label="Loading settings…" className="py-0" />
-        </div>
+        <Card>
+          <CardContent>
+            <PageLoader label="Loading settings…" className="py-0" />
+          </CardContent>
+        </Card>
       ) : (
-        SECTIONS.map(section => (
-          <div key={section.key} style={{ background: '#fff', borderRadius: 12, border: '1.5px solid var(--color-fm-line-soft)', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1.5px solid var(--color-fm-line-soft)', background: '#f8fafc' }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--color-fm-ink)' }}>{section.title}</div>
-              <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)', marginTop: 2 }}>{section.description}</div>
-            </div>
-            <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {section.fields.map(field => (
-                <Field key={field.key} field={field} value={values[field.key]} onChange={handleChange} />
-              ))}
-            </div>
-          </div>
-        ))
+        <Card>
+          <CardContent>
+            <form
+              id="settings-form"
+              onSubmit={(e) => {
+                e.preventDefault()
+                form.handleSubmit()
+              }}
+            >
+              <FieldGroup className="gap-5">
+                {SECTIONS.map((section, si) => (
+                  <div key={section.key} className="flex flex-col gap-5">
+                    {si > 0 && <FieldSeparator className="[&_[data-slot=field-separator-content]]:bg-card" />}
+                    <div>
+                      <h2 className="text-sm font-semibold">{section.title}</h2>
+                      <p className="text-sm text-muted-foreground">{section.description}</p>
+                    </div>
+                    {section.fields.map((def) => (
+                      <form.Field key={def.key} name={def.key}>
+                        {(field) => (
+                          <Field>
+                            <FieldLabel htmlFor={`setting-${def.key}`}>{def.label}</FieldLabel>
+                            <SettingInput field={field} def={def} />
+                            {def.hint && <FieldDescription>{def.hint}</FieldDescription>}
+                          </Field>
+                        )}
+                      </form.Field>
+                    ))}
+                  </div>
+                ))}
+              </FieldGroup>
+            </form>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

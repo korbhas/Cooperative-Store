@@ -1,33 +1,56 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useForm } from '@tanstack/react-form'
+import * as z from 'zod'
 import { IconPlus, IconPencil, IconTrash, IconChevronUp, IconChevronDown } from '@tabler/icons-react'
 import toast from 'react-hot-toast'
-
-const inputStyle = { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', outline: 'none', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', boxSizing: 'border-box' }
-const labelStyle = { display: 'block', fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600, color: 'var(--color-fm-ink3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 5 }
+import { Button } from '@/components/ui/button'
+import {
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 function slugify(str) { return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') }
 
+const categorySchema = z.object({
+  name: z.string().trim().min(1, 'Category name is required.'),
+  slug: z.string().trim().min(1, 'Slug is required.')
+    .regex(/^[a-z0-9-]+$/, 'Use only lowercase letters, numbers, and hyphens.'),
+  sortOrder: z.string().refine(
+    (v) => v === '' || Number.isInteger(Number(v)),
+    'Sort order must be a whole number.'
+  ),
+})
+
+const EMPTY = { name: '', slug: '', sortOrder: '0' }
+
 function CategoryDialog({ open, onClose, category, onSaved }) {
   const isEdit = !!category
-  const [form, setForm] = useState({ name: '', slug: '', sortOrder: 0 })
   const [saving, setSaving] = useState(false)
 
+  const form = useForm({
+    defaultValues: EMPTY,
+    validators: { onSubmit: categorySchema },
+    onSubmit: async ({ value }) => save(value),
+  })
+
   useEffect(() => {
-    if (category) setForm({ name: category.name, slug: category.slug, sortOrder: category.sortOrder })
-    else setForm({ name: '', slug: '', sortOrder: 0 })
-  }, [category, open])
+    if (category) form.reset({ name: category.name, slug: category.slug, sortOrder: String(category.sortOrder) })
+    else form.reset(EMPTY)
+  }, [category, open, form])
 
-  function handleNameChange(name) { setForm(f => ({ ...f, name, slug: slugify(name) })) }
-
-  async function handleSave() {
-    if (!form.name || !form.slug) { toast.error('Name is required'); return }
+  async function save(value) {
     setSaving(true)
     try {
       const url = isEdit ? `/api/admin/categories/${category.id}` : '/api/admin/categories'
       const method = isEdit ? 'PATCH' : 'POST'
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...value, sortOrder: Number(value.sortOrder || 0) }),
+      })
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       toast.success(isEdit ? 'Category updated' : 'Category created')
       onSaved(); onClose()
@@ -35,23 +58,101 @@ function CategoryDialog({ open, onClose, category, onSaved }) {
     finally { setSaving(false) }
   }
 
-  if (!open) return null
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
-      <div style={{ position: 'relative', background: '#fff', borderRadius: 14, width: '100%', maxWidth: 420, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>{isEdit ? 'Edit Category' : 'Add Category'}</div>
-        <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div><label style={labelStyle}>Name</label><input style={inputStyle} value={form.name} onChange={e => handleNameChange(e.target.value)} placeholder="Category name" /></div>
-          <div><label style={labelStyle}>Slug</label><input style={inputStyle} value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} placeholder="category-slug" /></div>
-          <div><label style={labelStyle}>Sort Order</label><input style={inputStyle} type="number" value={form.sortOrder} onChange={e => setForm(f => ({ ...f, sortOrder: Number(e.target.value) }))} /></div>
-        </div>
-        <div style={{ padding: '14px 24px', borderTop: '1.5px solid var(--color-fm-line-soft)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', background: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 500, color: 'var(--color-fm-ink2)', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSave} disabled={saving} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--color-fm-green)', color: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>{saving ? 'Saving…' : isEdit ? 'Save' : 'Add'}</button>
-        </div>
-      </div>
-    </div>
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? 'Edit Category' : 'Add Category'}</DialogTitle>
+        </DialogHeader>
+
+        <form
+          id="category-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
+          <FieldGroup className="gap-4">
+            <form.Field name="name">
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor="category-name">Name</FieldLabel>
+                    <Input
+                      id="category-name"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => {
+                        field.handleChange(e.target.value)
+                        form.setFieldValue('slug', slugify(e.target.value))
+                      }}
+                      aria-invalid={isInvalid}
+                      placeholder="Category name"
+                      autoComplete="off"
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
+
+            <form.Field name="slug">
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor="category-slug">Slug</FieldLabel>
+                    <Input
+                      id="category-slug"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="category-slug"
+                      className="font-mono"
+                      autoComplete="off"
+                    />
+                    <FieldDescription>Used in URLs. Auto-generated from the name.</FieldDescription>
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
+
+            <form.Field name="sortOrder">
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor="category-sortOrder">Sort Order</FieldLabel>
+                    <Input
+                      id="category-sortOrder"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      type="number"
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
+          </FieldGroup>
+        </form>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="submit" form="category-form" disabled={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Save' : 'Add'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

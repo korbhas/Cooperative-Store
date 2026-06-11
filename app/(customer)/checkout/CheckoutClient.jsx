@@ -4,10 +4,27 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { IconMapPin, IconTag, IconChevronRight, IconShoppingBag, IconCircleCheck } from '@tabler/icons-react'
+import { useForm } from '@tanstack/react-form'
+import * as z from 'zod'
+import { IconMapPin, IconChevronRight, IconShoppingBag, IconCircleCheck } from '@tabler/icons-react'
 import { useUser } from '@clerk/nextjs'
 import { useCartStore } from '@/store/cart'
 import { RAZORPAY_CURRENCY, RAZORPAY_THEME_COLOR } from '@/lib/config'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator,
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import {
+  InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput,
+} from '@/components/ui/input-group'
+
+const checkoutSchema = z.object({
+  name: z.string().trim().min(2, 'Enter your full name.'),
+  phone: z.string().trim().regex(/^[0-9]{10}$/, 'Enter a valid 10-digit phone number.'),
+  address: z.string().trim().min(10, 'Enter your complete delivery address.'),
+})
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -26,8 +43,6 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
   const [mounted, setMounted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const [form, setForm] = useState({ name: '', phone: '', address: '' })
-
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
   const [coupon, setCoupon] = useState(null)
@@ -36,18 +51,19 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
   const totalAmount = useCartStore((s) => s.totalAmount)
   const clearCart = useCartStore((s) => s.clearCart)
 
+  const form = useForm({
+    defaultValues: { name: '', phone: '', address: '' },
+    validators: { onSubmit: checkoutSchema },
+    onSubmit: async ({ value }) => placeOrder(value),
+  })
+
   useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
-    if (user) {
-      setForm((f) => ({ ...f, name: f.name || user.fullName || user.firstName || '' }))
+    if (user && !form.state.values.name) {
+      form.setFieldValue('name', user.fullName || user.firstName || '')
     }
-  }, [user])
-
-  function handleChange(e) {
-    const { name, value } = e.target
-    setForm((f) => ({ ...f, [name]: value }))
-  }
+  }, [user, form])
 
   async function applyCoupon() {
     if (!couponInput.trim()) return
@@ -69,13 +85,7 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
     }
   }
 
-  async function handlePlaceOrder() {
-    const { name, phone, address } = form
-    if (!name || !phone || !address) {
-      toast.error('Please fill in all delivery details')
-      return
-    }
-
+  async function placeOrder({ name, phone, address }) {
     setSubmitting(true)
     const addressStr = address
 
@@ -203,70 +213,159 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
 
         <div className="flex flex-col md:flex-row gap-5">
 
-          {/* Left — delivery + coupon */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
-
-            <Card title="Delivery Details" icon={<IconMapPin size={14} />}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="Full Name" name="name" value={form.name} onChange={handleChange} placeholder="John Doe" />
-                  <Field label="Phone" name="phone" value={form.phone} onChange={handleChange} placeholder="9876543210" type="tel" />
-                </div>
-                <Field label="Address" name="address" value={form.address} onChange={handleChange} placeholder="House no, Street, Locality" />
-              </div>
-            </Card>
-
-            <Card title="Coupon Code" icon={<IconTag size={14} />}>
-              {coupon ? (
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '10px 14px', borderRadius: 8,
-                  background: 'var(--color-fm-green-soft)',
-                  border: '1.5px dashed var(--color-fm-green-ink)',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <IconCircleCheck size={15} color="var(--color-fm-green-ink)" />
-                    <div>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--color-fm-green-ink)', letterSpacing: 1 }}>
-                        {coupon.code}
-                      </div>
-                      <div style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'var(--color-fm-green-ink)', marginTop: 1 }}>
-                        {coupon.discountType === 'percentage' ? `${coupon.discountValue}% off` : `₹${coupon.discountValue} off`}
-                        {coupon.description ? ` · ${coupon.description}` : ''}
-                      </div>
-                    </div>
+          {/* Left — delivery + coupon, one block */}
+          <Card className="flex-1 self-start">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <IconMapPin className="size-4 text-primary" /> Delivery Details
+              </CardTitle>
+              <CardDescription>
+                Tell us where to deliver your order.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form
+                id="checkout-form"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  form.handleSubmit()
+                }}
+              >
+                <FieldGroup>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <form.Field name="name">
+                      {(field) => {
+                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                        return (
+                          <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
+                            <Input
+                              id={field.name}
+                              name={field.name}
+                              value={field.state.value}
+                              onBlur={field.handleBlur}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              aria-invalid={isInvalid}
+                              placeholder="John Doe"
+                              autoComplete="name"
+                            />
+                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                          </Field>
+                        )
+                      }}
+                    </form.Field>
+                    <form.Field name="phone">
+                      {(field) => {
+                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                        return (
+                          <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>Phone</FieldLabel>
+                            <Input
+                              id={field.name}
+                              name={field.name}
+                              value={field.state.value}
+                              onBlur={field.handleBlur}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              aria-invalid={isInvalid}
+                              placeholder="9876543210"
+                              type="tel"
+                              inputMode="numeric"
+                              maxLength={10}
+                              autoComplete="tel-national"
+                            />
+                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                          </Field>
+                        )
+                      }}
+                    </form.Field>
                   </div>
-                  <button onClick={() => { setCoupon(null); setCouponInput('') }} style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)',
-                  }}>Remove</button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input
-                    value={couponInput}
-                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                    onKeyDown={(e) => e.key === 'Enter' && applyCoupon()}
-                    placeholder="ENTER CODE"
-                    style={{
-                      flex: 1, padding: '9px 12px', borderRadius: 7, outline: 'none',
-                      border: '1.5px solid var(--color-fm-line-soft)',
-                      fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: 1.5,
-                      background: '#fff', color: 'var(--color-fm-ink)',
+
+                  <form.Field name="address">
+                    {(field) => {
+                      const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <FieldLabel htmlFor={field.name}>Address</FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            placeholder="House no, Street, Locality"
+                            autoComplete="street-address"
+                          />
+                          <FieldDescription>
+                            Include house number, street, and locality.
+                          </FieldDescription>
+                          {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                        </Field>
+                      )
                     }}
-                  />
-                  <button onClick={applyCoupon} disabled={couponLoading} style={{
-                    padding: '9px 18px', borderRadius: 7, border: 'none', flexShrink: 0,
-                    background: 'var(--color-fm-accent)', color: '#fff',
-                    fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 500,
-                    cursor: couponLoading ? 'default' : 'pointer',
-                  }}>
-                    {couponLoading ? '...' : 'Apply'}
-                  </button>
-                </div>
-              )}
-            </Card>
-          </div>
+                  </form.Field>
+
+                  <FieldSeparator className="[&_[data-slot=field-separator-content]]:bg-card">
+                    Coupon
+                  </FieldSeparator>
+
+                  {coupon ? (
+                    <div className="flex items-center justify-between rounded-md border border-dashed border-secondary-foreground/60 bg-secondary px-3.5 py-2.5">
+                      <div className="flex items-center gap-2 text-secondary-foreground">
+                        <IconCircleCheck className="size-4 shrink-0" />
+                        <div>
+                          <p className="font-mono text-xs font-bold tracking-widest">{coupon.code}</p>
+                          <p className="text-xs">
+                            {coupon.discountType === 'percentage' ? `${coupon.discountValue}% off` : `₹${coupon.discountValue} off`}
+                            {coupon.description ? ` · ${coupon.description}` : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground"
+                        onClick={() => { setCoupon(null); setCouponInput('') }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ) : (
+                    <Field>
+                      <FieldLabel htmlFor="coupon-code">Coupon Code</FieldLabel>
+                      <InputGroup>
+                        <InputGroupInput
+                          id="coupon-code"
+                          value={couponInput}
+                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault()
+                              applyCoupon()
+                            }
+                          }}
+                          placeholder="ENTER CODE"
+                          className="font-mono text-sm tracking-widest"
+                          autoComplete="off"
+                        />
+                        <InputGroupAddon align="inline-end">
+                          <InputGroupButton
+                            type="button"
+                            onClick={applyCoupon}
+                            disabled={couponLoading}
+                          >
+                            {couponLoading ? 'Checking…' : 'Apply'}
+                          </InputGroupButton>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      <FieldDescription>Have a promo code? Apply it here.</FieldDescription>
+                    </Field>
+                  )}
+                </FieldGroup>
+              </form>
+            </CardContent>
+          </Card>
 
           {/* Right — order summary */}
           <div style={{ width: '100%', maxWidth: 320 }} className="md:w-80 md:flex-none">
@@ -321,7 +420,8 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
               </div>
 
               <button
-                onClick={handlePlaceOrder}
+                type="submit"
+                form="checkout-form"
                 disabled={submitting}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -350,56 +450,6 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-function Card({ title, icon, children }) {
-  return (
-    <div style={{
-      background: '#fff', borderRadius: 12,
-      border: '1.5px solid var(--color-fm-line-soft)',
-      overflow: 'hidden',
-    }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '12px 16px',
-        borderBottom: '1px solid var(--color-fm-line-soft)',
-        fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600,
-        color: 'var(--color-fm-ink)',
-      }}>
-        <span style={{ color: 'var(--color-fm-green)' }}>{icon}</span>
-        {title}
-      </div>
-      <div style={{ padding: '16px' }}>{children}</div>
-    </div>
-  )
-}
-
-function Field({ label, name, value, onChange, placeholder, type = 'text', maxLength }) {
-  return (
-    <div>
-      <label style={{
-        display: 'block', fontFamily: 'var(--font-sans)', fontSize: 11,
-        fontWeight: 600, color: 'var(--color-fm-ink3)',
-        textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 5,
-      }}>
-        {label}
-      </label>
-      <input
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        type={type}
-        maxLength={maxLength}
-        style={{
-          width: '100%', padding: '9px 12px', borderRadius: 7, outline: 'none',
-          border: '1.5px solid var(--color-fm-line-soft)',
-          fontFamily: 'var(--font-sans)', fontSize: 13, background: '#fff',
-          color: 'var(--color-fm-ink)',
-        }}
-      />
-    </div>
-  )
-}
 
 function Row({ label, value, green }) {
   return (

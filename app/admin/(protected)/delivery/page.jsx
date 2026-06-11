@@ -1,69 +1,157 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { IconPlus, IconPencil, IconTrash, IconX } from '@tabler/icons-react'
+import { useForm } from '@tanstack/react-form'
+import * as z from 'zod'
+import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-react'
 import toast from 'react-hot-toast'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-const inputStyle = { width: '100%', padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', outline: 'none', fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', background: '#fff', boxSizing: 'border-box' }
-const labelStyle = { display: 'block', fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600, color: 'var(--color-fm-ink3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 5 }
 const VEHICLE_COLORS = { bike: { bg: '#dbeafe', color: '#1e40af' }, scooter: { bg: '#ede9fe', color: '#5b21b6' }, car: { bg: '#dcfce7', color: '#166534' }, van: { bg: '#fef9c3', color: '#854d0e' } }
+
+const agentSchema = z.object({
+  name: z.string().trim().min(1, 'Agent name is required.'),
+  phone: z.string().trim().min(1, 'Phone number is required.'),
+  vehicleType: z.enum(['bike', 'scooter', 'car', 'van']),
+  isActive: z.boolean(),
+})
+
+const EMPTY_AGENT = { name: '', phone: '', vehicleType: 'bike', isActive: true }
 
 function AgentDialog({ open, onClose, agent, onSaved }) {
   const isEdit = !!agent
-  const [form, setForm] = useState({ name: '', phone: '', vehicleType: 'bike', isActive: true })
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    setForm(agent ? { name: agent.name, phone: agent.phone, vehicleType: agent.vehicleType, isActive: agent.isActive } : { name: '', phone: '', vehicleType: 'bike', isActive: true })
-  }, [agent, open])
+  const form = useForm({
+    defaultValues: EMPTY_AGENT,
+    validators: { onSubmit: agentSchema },
+    onSubmit: async ({ value }) => save(value),
+  })
 
-  async function handleSave() {
-    if (!form.name || !form.phone) { toast.error('Name and phone required'); return }
+  useEffect(() => {
+    form.reset(agent
+      ? { name: agent.name, phone: agent.phone, vehicleType: agent.vehicleType, isActive: agent.isActive }
+      : EMPTY_AGENT)
+  }, [agent, open, form])
+
+  async function save(value) {
     setSaving(true)
     const url = isEdit ? `/api/admin/agents/${agent.id}` : '/api/admin/agents'
-    const res = await fetch(url, { method: isEdit ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+    const res = await fetch(url, { method: isEdit ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) })
     setSaving(false)
     if (res.ok) { toast.success(isEdit ? 'Agent updated' : 'Agent added'); onSaved(); onClose() }
     else toast.error('Failed to save')
   }
 
-  if (!open) return null
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
-      <div style={{ position: 'relative', background: '#fff', borderRadius: 14, width: '100%', maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>{isEdit ? 'Edit Agent' : 'Add Agent'}</div>
-          <button onClick={onClose} aria-label="Close dialog" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-fm-ink3)', display: 'flex' }}><IconX size={18} /></button>
-        </div>
-        <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div><label style={labelStyle}>Name</label><input style={inputStyle} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
-          <div><label style={labelStyle}>Phone</label><input style={inputStyle} value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} /></div>
-          <div>
-            <label style={labelStyle}>Vehicle Type</label>
-            <Select value={form.vehicleType} onValueChange={val => setForm(f => ({ ...f, vehicleType: val }))}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {['bike', 'scooter', 'car', 'van'].map(v => (
-                  <SelectItem key={v} value={v}>{v}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" id="agentActive" checked={form.isActive} onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))} style={{ width: 16, height: 16, accentColor: 'var(--color-fm-green)' }} />
-            <label htmlFor="agentActive" style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', cursor: 'pointer' }}>Active</label>
-          </div>
-        </div>
-        <div style={{ padding: '14px 24px', borderTop: '1.5px solid var(--color-fm-line-soft)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', background: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSave} disabled={saving} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--color-fm-green)', color: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>{saving ? 'Saving…' : isEdit ? 'Save' : 'Add'}</button>
-        </div>
-      </div>
-    </div>
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? 'Edit Agent' : 'Add Agent'}</DialogTitle>
+        </DialogHeader>
+
+        <form
+          id="agent-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
+          <FieldGroup className="gap-4">
+            <form.Field name="name">
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor="agent-name">Name</FieldLabel>
+                    <Input
+                      id="agent-name"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      autoComplete="off"
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
+
+            <form.Field name="phone">
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor="agent-phone">Phone</FieldLabel>
+                    <Input
+                      id="agent-phone"
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      type="tel"
+                      autoComplete="off"
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
+
+            <form.Field name="vehicleType">
+              {(field) => (
+                <Field>
+                  <FieldLabel htmlFor="agent-vehicle">Vehicle Type</FieldLabel>
+                  <Select name={field.name} value={field.state.value} onValueChange={field.handleChange}>
+                    <SelectTrigger id="agent-vehicle" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['bike', 'scooter', 'car', 'van'].map(v => (
+                        <SelectItem key={v} value={v}>{v}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              )}
+            </form.Field>
+
+            <form.Field name="isActive">
+              {(field) => (
+                <Field orientation="horizontal">
+                  <Checkbox
+                    id="agent-active"
+                    name={field.name}
+                    checked={field.state.value}
+                    onCheckedChange={field.handleChange}
+                  />
+                  <FieldLabel htmlFor="agent-active" className="font-normal">
+                    Active
+                  </FieldLabel>
+                </Field>
+              )}
+            </form.Field>
+          </FieldGroup>
+        </form>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="submit" form="agent-form" disabled={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Save' : 'Add'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -80,17 +168,22 @@ function AssignDialog({ order, agents, onClose, onSaved }) {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
-      <div style={{ position: 'relative', background: '#fff', borderRadius: 14, width: '100%', maxWidth: 360, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1.5px solid var(--color-fm-line-soft)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>Assign Delivery Agent</div>
-        <div style={{ padding: 24 }}>
-          <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)', marginBottom: 10 }}>Order #{order.id} · ₹{order.totalAmount.toFixed(2)}</div>
+    <Dialog open onOpenChange={(o) => { if (!o) onClose() }}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Assign Delivery Agent</DialogTitle>
+          <DialogDescription>
+            Order #{order.id} · ₹{order.totalAmount.toFixed(2)}
+          </DialogDescription>
+        </DialogHeader>
+
+        <Field>
+          <FieldLabel htmlFor="assign-agent">Agent</FieldLabel>
           <Select
             value={agentId === '' ? '__unassigned' : String(agentId)}
             onValueChange={val => setAgentId(val === '__unassigned' ? '' : val)}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="assign-agent" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -100,13 +193,16 @@ function AssignDialog({ order, agents, onClose, onSaved }) {
               ))}
             </SelectContent>
           </Select>
-        </div>
-        <div style={{ padding: '14px 24px', borderTop: '1.5px solid var(--color-fm-line-soft)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid var(--color-fm-line-soft)', background: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSave} disabled={saving} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--color-fm-green)', color: '#fff', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>{saving ? 'Saving…' : 'Assign'}</button>
-        </div>
-      </div>
-    </div>
+        </Field>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="button" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving…' : 'Assign'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

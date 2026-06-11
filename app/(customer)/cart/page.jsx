@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { IconMinus, IconPlus, IconTrash, IconShoppingCart, IconArrowRight, IconTag } from '@tabler/icons-react'
+import { IconMinus, IconPlus, IconTrash, IconShoppingCart, IconArrowRight, IconTag, IconX } from '@tabler/icons-react'
 import { useCartStore } from '@/store/cart'
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '@/lib/config'
 import PageLoader from '@/components/PageLoader'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Button } from '@/components/ui/button'
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false)
@@ -176,85 +178,68 @@ function CartItemRow({ item, onInc, onDec, onRemove }) {
   const subtotal = item.price * item.quantity
 
   return (
-    <div style={{
-      display: 'flex', gap: 12, padding: '14px',
-      background: '#fff', borderRadius: 10,
-      border: '1.5px solid var(--color-fm-line-soft)',
-      alignItems: 'center',
-    }}>
+    <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
       {/* Image */}
-      <div style={{
-        width: 60, height: 60, borderRadius: 8, flexShrink: 0, overflow: 'hidden',
-        background: item.imageUrl ? 'var(--color-fm-paper)' : 'var(--color-fm-green-soft)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {item.imageUrl ? (
-          <Image src={item.imageUrl} alt={item.name} width={60} height={60} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <span style={{ fontSize: 24 }}>🛒</span>
-        )}
+      <div className="w-20 shrink-0">
+        <AspectRatio ratio={1} className="overflow-hidden rounded-md bg-secondary">
+          {item.imageUrl ? (
+            <Image
+              src={item.imageUrl}
+              alt={item.name}
+              fill
+              sizes="80px"
+              className="object-cover"
+            />
+          ) : (
+            <span className="flex size-full items-center justify-center text-2xl">🛒</span>
+          )}
+        </AspectRatio>
       </div>
 
       {/* Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 600,
-          color: 'var(--color-fm-ink)', lineHeight: 1.3,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {item.name}
-        </div>
-        {item.variantName && (
-          <div style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'var(--color-fm-ink3)', marginTop: 2 }}>
-            {item.variantName}
-          </div>
-        )}
-        <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)', marginTop: 2 }}>
-          ₹{item.price} / {item.unit}
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate font-medium">{item.name}</h3>
+        <p className="text-sm text-muted-foreground">
+          {item.variantName ? `${item.variantName} · ` : ''}₹{item.price} / {item.unit}
+        </p>
+        <div className="mt-2 flex items-center gap-1.5">
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={onDec}
+            aria-label="Decrease quantity"
+          >
+            <IconMinus className="size-3.5" />
+          </Button>
+          <span className="min-w-6 text-center text-sm font-medium tabular-nums">
+            {item.quantity}
+          </span>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={onInc}
+            aria-label="Increase quantity"
+          >
+            <IconPlus className="size-3.5" />
+          </Button>
         </div>
       </div>
 
-      {/* Qty stepper */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-        <button onClick={onDec} aria-label="Decrease quantity" style={{
-          width: 28, height: 28, borderRadius: 7,
-          background: 'var(--color-fm-green-soft)',
-          border: '1.5px solid var(--color-fm-green-ink)',
-          color: 'var(--color-fm-green-ink)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', padding: 0,
-        }}>
-          <IconMinus size={12} />
-        </button>
-        <span style={{
-          fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 700,
-          color: 'var(--color-fm-ink)', minWidth: 24, textAlign: 'center',
-        }}>
-          {item.quantity}
-        </span>
-        <button onClick={onInc} aria-label="Increase quantity" style={{
-          width: 28, height: 28, borderRadius: 7,
-          background: 'var(--color-fm-green)', border: 'none', color: '#fff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', padding: 0,
-        }}>
-          <IconPlus size={12} />
-        </button>
+      {/* Line total */}
+      <div className="text-right">
+        <p className="font-semibold">₹{subtotal % 1 === 0 ? subtotal : subtotal.toFixed(2)}</p>
       </div>
 
-      {/* Subtotal + remove */}
-      <div style={{ flexShrink: 0, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
-          ₹{subtotal % 1 === 0 ? subtotal : subtotal.toFixed(2)}
-        </div>
-        <button onClick={onRemove} aria-label={`Remove ${item.name} from cart`} style={{
-          background: 'none', border: 'none', padding: 0,
-          color: 'var(--color-fm-ink3)', cursor: 'pointer',
-          display: 'flex', alignItems: 'center',
-        }}>
-          <IconTrash size={13} />
-        </button>
-      </div>
+      {/* Remove */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="shrink-0 text-muted-foreground"
+        onClick={onRemove}
+        aria-label={`Remove ${item.name} from cart`}
+      >
+        <IconX className="size-4" />
+      </Button>
     </div>
   )
 }
