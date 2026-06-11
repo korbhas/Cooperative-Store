@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { IconPackage, IconChevronRight } from '@tabler/icons-react'
+import AddressCard from '@/components/AddressCard'
 import OrderStatusTimeline from '@/components/OrderStatusTimeline'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -145,6 +146,16 @@ export default function OrderCardSheet({ order }) {
               <span>₹{order.totalAmount.toFixed(2)}</span>
             </div>
           </div>
+
+          <AddressCard
+            title="Delivery Address"
+            value={{
+              name: order.customerName,
+              address: order.deliveryAddress,
+              phone: order.customerPhone,
+              email: order.customerEmail,
+            }}
+          />
 
           <Link
             href={`/orders/${order.id}`}

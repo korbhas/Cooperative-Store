@@ -26,6 +26,7 @@ export default async function OrdersPage() {
           items: {
             include: { product: { select: { name: true, imageUrl: true } } },
           },
+          user: { select: { name: true, phone: true, email: true } },
         },
       })
     : []
@@ -36,6 +37,10 @@ export default async function OrdersPage() {
     totalAmount: o.totalAmount.toNumber(),
     discountAmount: o.discountAmount.toNumber(),
     createdAt: o.createdAt.toISOString(),
+    deliveryAddress: o.deliveryAddress,
+    customerName: o.user?.name ?? o.guestName ?? null,
+    customerPhone: o.user?.phone ?? o.guestPhone ?? null,
+    customerEmail: o.user?.email ?? o.guestEmail ?? null,
     itemCount: o.items.length,
     thumbUrl: o.items[0]?.product?.imageUrl ?? null,
     items: o.items.map((i) => ({
