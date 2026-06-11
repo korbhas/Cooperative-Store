@@ -44,49 +44,46 @@ export default function CategoryCards({ categories }) {
         </motion.div>
       </div>
 
-      {/* Categories Horizontal Scroll */}
-      <div className="w-full overflow-x-auto xl:[scrollbar-width:none] xl:[-ms-overflow-style:none] xl:[&::-webkit-scrollbar]:hidden">
-        <div className="flex gap-4">
-          {categories.map((category, index) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6, delay: 0.1 + index * 0.1, ease: EASE }}
-              className="w-full max-w-60 shrink-0"
+      {/* Categories Vertical List */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.map((category, index) => (
+          <motion.div
+            key={category.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.1 + index * 0.06, ease: EASE }}
+          >
+            <Link
+              href={`/products?category=${category.slug}`}
+              className="group flex items-center overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:border-primary/30"
             >
-              <Link
-                href={`/products?category=${category.slug}`}
-                className="group flex items-center overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:border-primary/30"
-              >
-                {/* Image Container */}
-                <div className="relative flex h-20 w-22 shrink-0 items-center justify-center overflow-hidden border-r border-border bg-secondary">
-                  {category.imageUrl ? (
-                    <Image
-                      src={category.imageUrl}
-                      alt=""
-                      fill
-                      sizes="88px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  ) : (
-                    <span className="text-3xl">{category.emoji}</span>
-                  )}
-                </div>
+              {/* Image Container */}
+              <div className="relative flex h-20 w-22 shrink-0 items-center justify-center overflow-hidden border-r border-border bg-secondary">
+                {category.imageUrl ? (
+                  <Image
+                    src={category.imageUrl}
+                    alt=""
+                    fill
+                    sizes="88px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                ) : (
+                  <span className="text-3xl">{category.emoji}</span>
+                )}
+              </div>
 
-                {/* Content Container */}
-                <div className="min-w-0 flex-1 px-4 py-3">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {category.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {category.count} item{category.count === 1 ? '' : 's'}
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+              {/* Content Container */}
+              <div className="min-w-0 flex-1 px-4 py-3">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {category.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {category.count} item{category.count === 1 ? '' : 's'}
+                </p>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
       </div>
     </section>
   )

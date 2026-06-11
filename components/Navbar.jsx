@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   IconHome, IconTag, IconClipboardList, IconSettings,
   IconShoppingCart, IconUser, IconLogout, IconPhone, IconMenu2,
-  IconChevronDown, IconLayoutGrid,
+  IconChevronDown,
 } from '@tabler/icons-react'
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useCartStore } from '@/store/cart'
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
 // Placeholder store phone — wire to getSettings().storePhone later.
@@ -227,27 +227,6 @@ export default function Navbar() {
               >
                 <IconUser className="size-4" /> Sign In
               </Link>
-            )}
-
-            {/* Categories — visible in the mobile top bar */}
-            {categories.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  aria-label="Categories"
-                  className="lg:hidden flex h-9 items-center gap-1 rounded-full border border-border bg-background px-3 text-sm font-medium outline-none"
-                >
-                  <IconLayoutGrid className="size-4" />
-                  <IconChevronDown className="size-3.5" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="max-h-80 w-52 overflow-y-auto">
-                  <DropdownMenuLabel>Categories</DropdownMenuLabel>
-                  {categories.map((c) => (
-                    <DropdownMenuItem key={c.id} render={<Link href={`/products?category=${c.slug}`} />}>
-                      {c.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
             )}
 
             {/* Mobile hamburger */}
