@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
-import { IconShoppingBag, IconPackage, IconChevronRight } from '@tabler/icons-react'
+import { IconShoppingBag } from '@tabler/icons-react'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import OrderCardSheet from './OrderCardSheet'
 
 export default async function OrdersPage() {
   const { userId } = await auth()
@@ -24,11 +24,8 @@ export default async function OrdersPage() {
         orderBy: { createdAt: 'desc' },
         include: {
           items: {
-            take: 1,
-            include: { product: { select: { imageUrl: true } } },
+            include: { product: { select: { name: true, imageUrl: true } } },
           },
-          _count: { select: { items: true } },
-          payment: { select: { status: true } },
         },
       })
     : []
@@ -37,9 +34,17 @@ export default async function OrdersPage() {
     id: o.id,
     status: o.status,
     totalAmount: o.totalAmount.toNumber(),
+    discountAmount: o.discountAmount.toNumber(),
     createdAt: o.createdAt.toISOString(),
-    itemCount: o._count.items,
+    itemCount: o.items.length,
     thumbUrl: o.items[0]?.product?.imageUrl ?? null,
+    items: o.items.map((i) => ({
+      id: i.id,
+      name: i.product?.name ?? 'Product',
+      variantName: i.variantName,
+      quantity: i.quantity,
+      unitPrice: i.unitPrice.toNumber(),
+    })),
   }))
 
   return (
@@ -74,88 +79,12 @@ export default async function OrdersPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCardSheet key={order.id} order={order} />
             ))}
           </div>
         )}
 
       </div>
     </div>
-  )
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-const STATUS_STYLES = {
-  pending:          { bg: 'var(--color-fm-paper2)',      text: 'var(--color-fm-ink3)',      label: 'Pending' },
-  processing:       { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',    label: 'Processing' },
-  out_for_delivery: { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',    label: 'Out for Delivery' },
-  delivered:        { bg: 'var(--color-fm-green-soft)',  text: 'var(--color-fm-green-ink)', label: 'Delivered' },
-  cancelled:        { bg: '#fdecea',                    text: '#c0392b',                   label: 'Cancelled' },
-  refunded:         { bg: '#fdecea',                    text: '#c0392b',                   label: 'Refunded' },
-}
-
-function StatusBadge({ status }) {
-  const s = STATUS_STYLES[status] ?? STATUS_STYLES.pending
-  return (
-    <div style={{
-      display: 'inline-flex', alignItems: 'center',
-      padding: '3px 10px', borderRadius: 20,
-      background: s.bg,
-      fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
-      color: s.text, flexShrink: 0,
-    }}>
-      {s.label}
-    </div>
-  )
-}
-
-function OrderCard({ order }) {
-  return (
-    <Link href={`/orders/${order.id}`} style={{ textDecoration: 'none' }}>
-      <div style={{
-        background: '#fff', borderRadius: 12,
-        border: '1.5px solid var(--color-fm-line-soft)',
-        padding: '16px',
-        display: 'flex', alignItems: 'center', gap: 14,
-        transition: 'border-color 0.15s',
-      }}>
-        {/* Thumbnail */}
-        <div style={{
-          width: 56, height: 56, borderRadius: 10, flexShrink: 0,
-          background: 'var(--color-fm-paper2)', overflow: 'hidden', position: 'relative',
-        }}>
-          {order.thumbUrl ? (
-            <Image src={order.thumbUrl} alt="" fill style={{ objectFit: 'cover' }} />
-          ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <IconPackage size={22} color="var(--color-fm-ink3)" />
-            </div>
-          )}
-        </div>
-
-        {/* Info */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, color: 'var(--color-fm-ink)' }}>
-              Order #{order.id}
-            </span>
-            <StatusBadge status={order.status} />
-          </div>
-          <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-ink3)' }}>
-            {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-            {' · '}{order.itemCount} {order.itemCount === 1 ? 'item' : 'items'}
-          </div>
-        </div>
-
-        {/* Amount + arrow */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
-            ₹{order.totalAmount.toFixed(2)}
-          </div>
-          <IconChevronRight size={16} color="var(--color-fm-ink3)" />
-        </div>
-      </div>
-    </Link>
   )
 }
