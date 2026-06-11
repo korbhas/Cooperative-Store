@@ -220,12 +220,31 @@ export default function Navbar() {
               {STORE_PHONE}
             </a>
 
-            {/* Auth — desktop */}
+            {/* Cart */}
+            <CartDrawer>
+              <button
+                type="button"
+                aria-label="Cart"
+                className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
+              >
+                <IconShoppingCart className="size-4" />
+                {mounted && totalItems > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{ background: 'var(--color-fm-accent)' }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </CartDrawer>
+
+            {/* Auth — all breakpoints */}
             {signedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger
                   aria-label="Account menu"
-                  className="max-lg:hidden flex items-center rounded-full outline-none"
+                  className="flex items-center rounded-full outline-none"
                 >
                   <Avatar className="size-9">
                     <AvatarImage src={user?.imageUrl} alt={displayName} />
@@ -250,31 +269,12 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="max-lg:hidden inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white transition-colors"
                 style={{ background: 'var(--color-fm-green)' }}
               >
                 <IconUser className="size-4" /> Sign In
               </Link>
             )}
-
-            {/* Cart */}
-            <CartDrawer>
-              <button
-                type="button"
-                aria-label="Cart"
-                className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
-              >
-                <IconShoppingCart className="size-4" />
-                {mounted && totalItems > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                    style={{ background: 'var(--color-fm-accent)' }}
-                  >
-                    {totalItems}
-                  </span>
-                )}
-              </button>
-            </CartDrawer>
           </div>
         </nav>
       </div>
