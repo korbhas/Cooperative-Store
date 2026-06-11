@@ -12,6 +12,7 @@ import { useUser, useClerk } from '@clerk/nextjs'
 import { useCartStore } from '@/store/cart'
 import { cn } from '@/lib/utils'
 import CartDrawer from '@/components/CartDrawer'
+import SettingsDrawer from '@/components/SettingsDrawer'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList,
@@ -30,7 +31,6 @@ const NAV_ITEMS = [
   { icon: IconHome, label: 'Home', href: '/' },
   { icon: IconTag, label: 'Products', href: '/products' },
   { icon: IconClipboardList, label: 'Orders', href: '/orders', authOnly: true },
-  { icon: IconSettings, label: 'Settings', href: '/settings', authOnly: true },
 ]
 
 export default function Navbar() {
@@ -43,6 +43,7 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false)
   const [sticky, setSticky] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [categories, setCategories] = useState([])
 
   useEffect(() => { setMounted(true) }, [])
@@ -134,6 +135,19 @@ export default function Navbar() {
                 )
               })}
 
+              {/* Settings — opens the settings drawer */}
+              {signedIn && (
+                <NavigationMenuItem>
+                  <button
+                    type="button"
+                    onClick={() => setSettingsOpen(true)}
+                    className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-background hover:text-foreground"
+                  >
+                    Settings
+                  </button>
+                </NavigationMenuItem>
+              )}
+
               {/* Categories dropdown */}
               {categories.length > 0 && (
                 <NavigationMenuItem>
@@ -213,7 +227,7 @@ export default function Navbar() {
                   <DropdownMenuItem render={<Link href="/orders" />}>
                     <IconClipboardList className="size-4" /> Orders
                   </DropdownMenuItem>
-                  <DropdownMenuItem render={<Link href="/settings" />}>
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                     <IconSettings className="size-4" /> Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -246,6 +260,11 @@ export default function Navbar() {
                     <Icon className="size-4" /> {label}
                   </DropdownMenuItem>
                 ))}
+                {signedIn && (
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                    <IconSettings className="size-4" /> Settings
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem render={<a href={`tel:${STORE_PHONE_TEL}`} />}>
                   <IconPhone className="size-4" /> {STORE_PHONE}
@@ -265,6 +284,8 @@ export default function Navbar() {
           </div>
         </nav>
       </div>
+
+      {signedIn && <SettingsDrawer open={settingsOpen} onOpenChange={setSettingsOpen} />}
     </header>
   )
 }
