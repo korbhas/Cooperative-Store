@@ -1,10 +1,9 @@
-import Link from 'next/link'
 import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import PromoBanners from '@/components/PromoBanners'
-import BottomNav from '@/components/BottomNav'
+import CategoryCards from '@/components/CategoryCards'
 import WelcomeOverlay, { WELCOME_SEEN_COOKIE } from '@/components/welcome/WelcomeOverlay'
 import { welcomeIllustrations } from '@/components/welcome/illustrations'
 import { CATEGORY_EMOJIS } from '@/lib/config'
@@ -12,12 +11,30 @@ import { CATEGORY_EMOJIS } from '@/lib/config'
 const getCategories = unstable_cache(
   async () => {
     try {
-      return await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } })
+      const categories = await prisma.category.findMany({
+        orderBy: { sortOrder: 'asc' },
+        include: {
+          _count: { select: { products: { where: { isActive: true } } } },
+          products: {
+            where: { isActive: true, imageUrl: { not: null } },
+            select: { imageUrl: true },
+            take: 1,
+          },
+        },
+      })
+      return categories.map((cat, i) => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        count: cat._count.products,
+        imageUrl: cat.products[0]?.imageUrl ?? null,
+        emoji: CATEGORY_EMOJIS[i % CATEGORY_EMOJIS.length],
+      }))
     } catch {
       return []
     }
   },
-  ['categories'],
+  ['categories-cards'],
   { revalidate: 3600, tags: ['categories'] }
 )
 
@@ -36,66 +53,9 @@ export default async function HomePage() {
 
         <PromoBanners />
 
-        {/* Heading */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{
-            fontFamily: 'var(--font-mono)', fontSize: 10,
-            color: 'var(--color-fm-ink3)', letterSpacing: 1.5,
-            textTransform: 'uppercase', marginBottom: 6,
-          }}>
-            What are you looking for?
-          </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
-            Shop by Category
-          </div>
-        </div>
-
-        {/* Category grid */}
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-          {/* All Products tile */}
-          <Link href="/products" style={{
-            aspectRatio: '128 / 188', borderRadius: 8,
-            border: '1.5px solid var(--color-fm-line-soft)',
-            background: 'transparent', display: 'flex',
-            flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', textDecoration: 'none', gap: 10,
-          }}>
-            <span style={{ fontSize: 32, lineHeight: 1 }}>🛒</span>
-            <span style={{
-              color: 'var(--color-fm-ink)', fontWeight: 700, fontSize: 12,
-              textAlign: 'center', padding: '0 8px', lineHeight: 1.3,
-            }}>
-              All Products
-            </span>
-          </Link>
-
-          {categories.map((cat, i) => (
-            <Link
-              key={cat.id}
-              href={`/products?category=${cat.slug}`}
-              style={{
-                aspectRatio: '128 / 188', borderRadius: 8,
-                border: '1.5px solid var(--color-fm-line-soft)',
-                background: 'transparent', display: 'flex',
-                flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', textDecoration: 'none', gap: 10,
-              }}
-            >
-              <span style={{ fontSize: 32, lineHeight: 1 }}>
-                {CATEGORY_EMOJIS[i % CATEGORY_EMOJIS.length]}
-              </span>
-              <span style={{
-                color: 'var(--color-fm-ink)', fontWeight: 700, fontSize: 12,
-                textAlign: 'center', padding: '0 8px', lineHeight: 1.3,
-              }}>
-                {cat.name}
-              </span>
-            </Link>
-          ))}
-        </div>
+        <CategoryCards categories={categories} />
       </main>
 
-      <BottomNav />
     </div>
   )
 }

@@ -88,7 +88,7 @@ app/
 ## Pages Built (Customer App)
 | Route | File | Notes |
 |---|---|---|
-| `/` | `app/(customer)/page.jsx` | Server Component, category grid + PromoBanners |
+| `/` | `app/(customer)/page.jsx` | Server Component, PromoBanners + CategoryCards (horizontal category cards with product counts) |
 | `/products` | `app/(customer)/products/page.jsx` | Server Component, search/filter/sort + ProductCard grid |
 | `/cart` | `app/(customer)/cart/page.jsx` | Client Component, Zustand cart, qty stepper, order summary, free delivery nudge |
 | `/checkout` | `app/(customer)/checkout/page.jsx` | Client Component, delivery form + pincode validation, coupon, Razorpay payment |
@@ -104,6 +104,7 @@ app/
 | `NavSearch` | Client | Search input, isolated for useSearchParams |
 | `BottomNav` | Client | Mobile bottom navigation |
 | `PromoBanners` | Server | Static promo banners on home page |
+| `CategoryCards` | Client | Home page category section: motion stagger-in, horizontal scroll cards (product image or emoji + item count) |
 | `CategoryFilter` | Server | Horizontal pill links for category filtering |
 | `SortSelect` | Client | Sort dropdown (wrap in `<Suspense>` when used in Server Component) |
 | `ProductCard` | Client | Product tile with add-to-cart stepper + wishlist toggle |

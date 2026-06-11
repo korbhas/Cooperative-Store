@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { IconChevronRight } from '@tabler/icons-react'
 import { prisma } from '@/lib/prisma'
-import BottomNav from '@/components/BottomNav'
 import ProductCard from '@/components/ProductCard'
 import ProductActions from './ProductActions'
 
@@ -188,7 +187,6 @@ export default async function ProductDetailPage({ params }) {
         )}
 
       </main>
-      <BottomNav />
     </div>
   )
 }

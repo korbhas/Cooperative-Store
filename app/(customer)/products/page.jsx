@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { unstable_cache } from 'next/cache'
 import { Suspense } from 'react'
-import BottomNav from '@/components/BottomNav'
 import CategoryFilter from '@/components/CategoryFilter'
 import ProductCard from '@/components/ProductCard'
 import SortSelect from '@/components/SortSelect'
@@ -110,7 +109,6 @@ export default async function ProductsPage({ searchParams }) {
           </div>
         )}
       </main>
-      <BottomNav />
     </div>
   )
 }

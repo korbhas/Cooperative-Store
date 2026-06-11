@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   IconHome, IconTag, IconClipboardList, IconSettings,
   IconShoppingCart, IconUser, IconLogout, IconPhone, IconMenu2,
+  IconChevronDown, IconLayoutGrid,
 } from '@tabler/icons-react'
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useCartStore } from '@/store/cart'
@@ -16,7 +17,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
 // Placeholder store phone — wire to getSettings().storePhone later.
@@ -41,8 +42,18 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false)
   const [sticky, setSticky] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [categories, setCategories] = useState([])
 
   useEffect(() => { setMounted(true) }, [])
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/products/categories')
+      .then((r) => r.json())
+      .then((d) => { if (active) setCategories(Array.isArray(d) ? d : []) })
+      .catch(() => {})
+    return () => { active = false }
+  }, [])
 
   const handleScroll = useCallback(() => setSticky(window.scrollY >= 50), [])
   const handleResize = useCallback(() => {
@@ -121,11 +132,40 @@ export default function Navbar() {
                   </NavigationMenuItem>
                 )
               })}
+
+              {/* Categories dropdown */}
+              {categories.length > 0 && (
+                <NavigationMenuItem>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground outline-none transition hover:bg-background hover:text-foreground aria-expanded:bg-background aria-expanded:text-foreground">
+                      Categories
+                      <IconChevronDown className="size-3.5 transition-transform aria-expanded:rotate-180" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="max-h-80 w-52 overflow-y-auto">
+                      {categories.map((c) => (
+                        <DropdownMenuItem key={c.id} render={<Link href={`/products?category=${c.slug}`} />}>
+                          {c.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </NavigationMenuItem>
+              )}
             </NavigationMenuList>
           </NavigationMenu>
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
+            {/* Orders — mobile top bar only (desktop has it in the center nav).
+                Always shown; /orders is auth-gated by middleware (redirects to login). */}
+            <Link
+              href="/orders"
+              aria-label="Orders"
+              className="lg:hidden flex size-9 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
+            >
+              <IconClipboardList className="size-4" />
+            </Link>
+
             {/* Store phone */}
             <a
               href={`tel:${STORE_PHONE_TEL}`}
@@ -187,6 +227,27 @@ export default function Navbar() {
               >
                 <IconUser className="size-4" /> Sign In
               </Link>
+            )}
+
+            {/* Categories — visible in the mobile top bar */}
+            {categories.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  aria-label="Categories"
+                  className="lg:hidden flex h-9 items-center gap-1 rounded-full border border-border bg-background px-3 text-sm font-medium outline-none"
+                >
+                  <IconLayoutGrid className="size-4" />
+                  <IconChevronDown className="size-3.5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="max-h-80 w-52 overflow-y-auto">
+                  <DropdownMenuLabel>Categories</DropdownMenuLabel>
+                  {categories.map((c) => (
+                    <DropdownMenuItem key={c.id} render={<Link href={`/products?category=${c.slug}`} />}>
+                      {c.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
             {/* Mobile hamburger */}
