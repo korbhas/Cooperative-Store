@@ -149,14 +149,6 @@ export default function CartDrawer({ children }) {
                   Checkout
                 </Button>
                 <DrawerClose asChild>
-                  <Link
-                    href="/cart"
-                    className="flex items-center justify-center rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
-                  >
-                    View Full Cart
-                  </Link>
-                </DrawerClose>
-                <DrawerClose asChild>
                   <Button variant="ghost" className="text-muted-foreground">
                     Continue Shopping
                   </Button>

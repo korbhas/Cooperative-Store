@@ -5,7 +5,6 @@ const YEAR = new Date().getFullYear()
 const LINKS = [
   { title: 'Home', href: '/' },
   { title: 'Products', href: '/products' },
-  { title: 'Cart', href: '/cart' },
   { title: 'Orders', href: '/orders' },
 ]
 

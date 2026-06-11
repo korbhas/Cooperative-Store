@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
 import { IconPackage, IconChevronRight } from '@tabler/icons-react'
 import AddressCard from '@/components/AddressCard'
@@ -156,13 +155,6 @@ export default function OrderCardSheet({ order }) {
               email: order.customerEmail,
             }}
           />
-
-          <Link
-            href={`/orders/${order.id}`}
-            className="mt-2 flex items-center justify-center rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            View Full Details
-          </Link>
         </div>
       </SheetContent>
     </Sheet>

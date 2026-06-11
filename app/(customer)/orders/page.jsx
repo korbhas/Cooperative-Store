@@ -1,12 +1,14 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { IconShoppingBag } from '@tabler/icons-react'
+import { IconShoppingBag, IconCircleCheck } from '@tabler/icons-react'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import OrderCardSheet from './OrderCardSheet'
 
-export default async function OrdersPage() {
+export default async function OrdersPage({ searchParams }) {
   const { userId } = await auth()
+  const { paid, placed } = await searchParams
 
   if (!userId) {
     redirect('/login?returnTo=/orders')
@@ -55,6 +57,23 @@ export default async function OrdersPage() {
   return (
     <div style={{ flex: 1, background: 'var(--color-fm-paper)' }}>
       <div style={{ maxWidth: 720, width: '100%', margin: '0 auto', padding: '24px 16px 48px' }}>
+
+        {(paid || placed) && (
+          <Alert
+            className="mb-5"
+            style={{
+              background: 'var(--color-fm-green-soft)',
+              borderColor: 'var(--color-fm-green-ink)',
+              color: 'var(--color-fm-green-ink)',
+            }}
+          >
+            <IconCircleCheck />
+            <AlertTitle>{paid ? 'Payment successful' : 'Order placed'}</AlertTitle>
+            <AlertDescription style={{ color: 'var(--color-fm-ink2)' }}>
+              Order #{paid || placed} is confirmed — tap it below to see details and track delivery.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--color-fm-ink)', marginBottom: 20 }}>
           My Orders
