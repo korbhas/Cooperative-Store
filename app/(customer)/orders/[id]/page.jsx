@@ -1,10 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { IconCircleCheck, IconMapPin, IconCreditCard, IconPackage, IconShoppingBag, IconChevronRight } from '@tabler/icons-react'
+import { IconCircleCheck, IconCreditCard, IconPackage, IconShoppingBag } from '@tabler/icons-react'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import AddressCard from '@/components/AddressCard'
 import OrderStatusTimeline from './OrderStatusTimeline'
 
 export default async function OrderDetailPage({ params, searchParams }) {
@@ -33,6 +34,7 @@ export default async function OrderDetailPage({ params, searchParams }) {
         include: { product: { select: { name: true, imageUrl: true } } },
       },
       payment: true,
+      user: { select: { name: true, phone: true, email: true } },
     },
   })
 
@@ -42,6 +44,9 @@ export default async function OrderDetailPage({ params, searchParams }) {
     id: raw.id,
     status: raw.status,
     deliveryAddress: raw.deliveryAddress,
+    customerName: raw.user?.name ?? raw.guestName ?? null,
+    customerPhone: raw.user?.phone ?? raw.guestPhone ?? null,
+    customerEmail: raw.user?.email ?? raw.guestEmail ?? null,
     totalAmount: raw.totalAmount.toNumber(),
     discountAmount: raw.discountAmount.toNumber(),
     estimatedDelivery: raw.estimatedDelivery?.toISOString() ?? null,
@@ -150,16 +155,21 @@ export default async function OrderDetailPage({ params, searchParams }) {
               </Section>
 
               {/* Delivery address */}
-              <Section title="Delivery Address" icon={<IconMapPin size={14} />}>
-                <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink)', lineHeight: 1.6 }}>
-                  {order.deliveryAddress}
-                </div>
+              <AddressCard
+                title="Delivery Address"
+                value={{
+                  name: order.customerName,
+                  address: order.deliveryAddress,
+                  phone: order.customerPhone,
+                  email: order.customerEmail,
+                }}
+              >
                 {order.estimatedDelivery && (
-                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-green-ink)', marginTop: 8 }}>
+                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-fm-green-ink)' }}>
                     Est. delivery: {new Date(order.estimatedDelivery).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                   </div>
                 )}
-              </Section>
+              </AddressCard>
 
               {/* Payment */}
               {order.payment && (
