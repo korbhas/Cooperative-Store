@@ -11,6 +11,7 @@ import {
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useCartStore } from '@/store/cart'
 import { cn } from '@/lib/utils'
+import CartDrawer from '@/components/CartDrawer'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList,
@@ -176,21 +177,23 @@ export default function Navbar() {
             </a>
 
             {/* Cart */}
-            <Link
-              href="/cart"
-              aria-label="Cart"
-              className="relative flex size-9 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
-            >
-              <IconShoppingCart className="size-4" />
-              {mounted && totalItems > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                  style={{ background: 'var(--color-fm-accent)' }}
-                >
-                  {totalItems}
-                </span>
-              )}
-            </Link>
+            <CartDrawer>
+              <button
+                type="button"
+                aria-label="Cart"
+                className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
+              >
+                <IconShoppingCart className="size-4" />
+                {mounted && totalItems > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{ background: 'var(--color-fm-accent)' }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </CartDrawer>
 
             {/* Auth — desktop */}
             {signedIn ? (
