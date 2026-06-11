@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import PromoBanners from '@/components/PromoBanners'
+import HeroCarousel from '@/components/HeroCarousel'
 import CategoryCards from '@/components/CategoryCards'
 import WelcomeOverlay, { WELCOME_SEEN_COOKIE } from '@/components/welcome/WelcomeOverlay'
 import { welcomeIllustrations } from '@/components/welcome/illustrations'
@@ -51,7 +51,7 @@ export default async function HomePage() {
       {showWelcome && <WelcomeOverlay illustrations={welcomeIllustrations()} />}
       <main className="pb-20 md:pb-8" style={{ padding: '24px 16px', maxWidth: 960, width: '100%', margin: '0 auto' }}>
 
-        <PromoBanners />
+        <HeroCarousel />
 
         <CategoryCards categories={categories} />
       </main>
