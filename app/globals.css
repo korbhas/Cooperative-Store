@@ -50,24 +50,24 @@
 
 :root {
   /* FreshMart brand mapped into shadcn semantic tokens */
-  --background: #fafaf6;          /* fm-paper */
-  --foreground: #1f2520;          /* fm-ink */
-  --card: #ffffff;
-  --card-foreground: #1f2520;
-  --popover: #ffffff;
-  --popover-foreground: #1f2520;
-  --primary: #1f4d34;             /* fm-green */
-  --primary-foreground: #ffffff;
-  --secondary: #e6efe6;           /* fm-green-soft */
-  --secondary-foreground: #2a6a47;/* fm-green-ink */
-  --muted: #f1f1ea;               /* fm-paper2 */
-  --muted-foreground: #8a948c;    /* fm-ink3 */
-  --accent: #d3893a;              /* fm-accent */
-  --accent-foreground: #ffffff;
+  --background: 60 29% 97%;          /* fm-paper #fafaf6 */
+  --foreground: 130 9% 13%;          /* fm-ink   #1f2520 */
+  --card: 0 0% 100%;
+  --card-foreground: 130 9% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 130 9% 13%;
+  --primary: 147 43% 21%;             /* fm-green   #1f4d34 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 120 22% 92%;           /* fm-green-soft #e6efe6 */
+  --secondary-foreground: 147 43% 29%;/* fm-green-ink  #2a6a47 */
+  --muted: 60 20% 93%;               /* fm-paper2  #f1f1ea */
+  --muted-foreground: 132 4% 56%;    /* fm-ink3    #8a948c */
+  --accent: 31 63% 53%;              /* fm-accent  #d3893a */
+  --accent-foreground: 0 0% 100%;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: rgba(31, 37, 32, 0.18); /* fm-line-soft */
-  --input: rgba(31, 37, 32, 0.18);
-  --ring: #1f4d34;
+  --border: 130 1% 84%;             /* fm-line-soft blended on white */
+  --input: 130 1% 84%;
+  --ring: 147 43% 21%;               /* fm-green   #1f4d34 */
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -134,6 +134,8 @@
   --font-sans: 'Okra', Helvetica, sans-serif;
   --font-heading: 'Okra', Helvetica, sans-serif;
   --font-mono: var(--font-jbmono), monospace;
+  /* Standard shadcn configurations expect CSS variables to be defined in raw HSL values (without the hsl() or # wrapper), like 222.2 47.4% 11.2%.
+     Your variables are using hex codes (#fafaf6) and rgba(). If your tailwind.config.js uses standard shadcn utilities like bg-primary/90 (which leverages opacity modifiers), Tailwind will output broken CSS because it tries to append opacity onto a hex string. */
 }
 
 @layer base {
