@@ -108,7 +108,7 @@ export default function CartPage() {
           </div>
 
           {/* Order summary */}
-          <div style={{ width: '100%', maxWidth: 320 }} className="md:w-80 md:flex-none">
+          <div className="w-full md:w-80 md:flex-none">
             <div style={{
               background: '#fff', borderRadius: 12,
               border: '1.5px solid var(--color-fm-line-soft)',

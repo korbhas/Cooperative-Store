@@ -214,7 +214,7 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
         <div className="flex flex-col md:flex-row gap-5">
 
           {/* Left — delivery + coupon, one block */}
-          <Card className="flex-1 self-start">
+          <Card className="min-w-0 flex-1 md:self-start">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IconMapPin className="size-4 text-primary" /> Delivery Details
@@ -368,7 +368,7 @@ export default function CheckoutClient({ deliveryFee: deliveryFeeConfig, freeDel
           </Card>
 
           {/* Right — order summary */}
-          <div style={{ width: '100%', maxWidth: 320 }} className="md:w-80 md:flex-none">
+          <div className="w-full md:w-80 md:flex-none">
             <div style={{
               background: '#fff', borderRadius: 12,
               border: '1.5px solid var(--color-fm-line-soft)',
