@@ -16,7 +16,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 
-// Right-side customer settings drawer. Controlled by the Navbar so menu items
+// Left-side customer settings drawer. Controlled by the Navbar so menu items
 // can open it: <SettingsDrawer open={open} onOpenChange={setOpen} />
 export default function SettingsDrawer({ open, onOpenChange }) {
   const router = useRouter()
@@ -39,7 +39,7 @@ export default function SettingsDrawer({ open, onOpenChange }) {
   }
 
   return (
-    <Drawer direction="right" open={open} onOpenChange={onOpenChange}>
+    <Drawer direction="left" open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Settings</DrawerTitle>
