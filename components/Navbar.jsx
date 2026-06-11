@@ -97,8 +97,29 @@ export default function Navbar() {
               : 'border-transparent bg-transparent p-1'
           )}
         >
-          {/* Brand */}
-          <Link href="/" className="flex shrink-0 items-center gap-2 ps-1">
+          {/* Left — menu + brand */}
+          <div className="flex shrink-0 items-center gap-2">
+            {/* Mobile hamburger */}
+            <MenuDrawer
+              open={menuOpen}
+              onOpenChange={setMenuOpen}
+              categories={categories}
+              signedIn={signedIn}
+              onOpenSettings={() => setSettingsOpen(true)}
+              onSignOut={handleLogout}
+              phone={STORE_PHONE}
+              phoneTel={STORE_PHONE_TEL}
+            >
+              <button
+                type="button"
+                aria-label="Menu"
+                className="lg:hidden flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background outline-none"
+              >
+                <IconMenu2 className="size-5" />
+              </button>
+            </MenuDrawer>
+
+            <Link href="/" className="flex shrink-0 items-center gap-2 ps-1">
             <span
               className="flex size-7 items-center justify-center rounded-lg text-[10px] font-extrabold text-white"
               style={{ background: 'var(--color-fm-accent)', fontFamily: 'var(--font-heading)' }}
@@ -111,7 +132,8 @@ export default function Navbar() {
             >
               FreshMart
             </span>
-          </Link>
+            </Link>
+          </div>
 
           {/* Center nav */}
           <NavigationMenu className="max-lg:hidden rounded-full bg-muted p-0.5">
@@ -247,25 +269,6 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Mobile hamburger */}
-            <MenuDrawer
-              open={menuOpen}
-              onOpenChange={setMenuOpen}
-              categories={categories}
-              signedIn={signedIn}
-              onOpenSettings={() => setSettingsOpen(true)}
-              onSignOut={handleLogout}
-              phone={STORE_PHONE}
-              phoneTel={STORE_PHONE_TEL}
-            >
-              <button
-                type="button"
-                aria-label="Menu"
-                className="lg:hidden flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background outline-none"
-              >
-                <IconMenu2 className="size-5" />
-              </button>
-            </MenuDrawer>
           </div>
         </nav>
       </div>
