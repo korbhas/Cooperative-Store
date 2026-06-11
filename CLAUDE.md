@@ -91,7 +91,9 @@ app/
 | `/` | `app/(customer)/page.jsx` | Server Component, PromoBanners + CategoryCards (horizontal category cards with product counts) |
 | `/products` | `app/(customer)/products/page.jsx` | Server Component, search/filter/sort + ProductCard grid |
 | `/cart` | `app/(customer)/cart/page.jsx` | Client Component, Zustand cart, qty stepper, order summary, free delivery nudge |
-| `/checkout` | `app/(customer)/checkout/page.jsx` | Client Component, delivery form + pincode validation, coupon, Razorpay payment |
+| `/checkout` | `app/(customer)/checkout/page.jsx` | Redirects to `/checkout/address` |
+| `/checkout/address` | `app/(customer)/checkout/address/` | Step 1: TanStack Form delivery details, saves to `store/checkout.js`, continues to payment |
+| `/checkout/payment` | `app/(customer)/checkout/payment/` | Step 2: address summary + coupon + order summary, Razorpay payment. Guards back to address step if store empty |
 | `/login` | `app/(customer)/login/page.jsx` | Clerk `<SignIn>`, `returnTo` redirect, `LoginForm` wrapped in `<Suspense>` for useSearchParams |
 | `/register` | `app/(customer)/register/page.jsx` | Clerk `<SignUp>` |
 | `/admin/login` | `app/admin/login/[[...rest]]/page.jsx` | Clerk `<SignIn>` with FreshMart styling, `signUpUrl` disabled |
@@ -118,6 +120,10 @@ app/
 
 ## Wishlist Store (`store/wishlist.js`)
 `toggle(productId)` · `isWishlisted(productId)` · `clear()`
+
+## Checkout Store (`store/checkout.js`)
+Carries state across the two checkout steps (persisted):
+`address` ({name, phone, address}) · `coupon` · `setAddress(addr)` · `setCoupon(c)` · `clear()`
 
 ## API Helpers (`lib/api-error.js`)
 `apiResponse(data, status?)` · `apiError(message, status?)`

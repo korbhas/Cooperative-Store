@@ -148,7 +148,7 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <Link href="/checkout" style={{
+              <Link href="/checkout/address" style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 marginTop: 20, padding: '12px', borderRadius: 8,
                 background: 'var(--color-fm-green)', color: '#fff',
