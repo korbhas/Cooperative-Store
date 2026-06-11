@@ -1,7 +1,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const CUSTOMER_PROTECTED = ['/orders', '/settings', '/wishlist', '/checkout']
+const CUSTOMER_PROTECTED = ['/settings', '/wishlist', '/checkout']
 const CUSTOMER_AUTH_ROUTES = ['/login', '/register']
 const CUSTOMER_AUTH_PREFIXES = ['/login/', '/register/']
 

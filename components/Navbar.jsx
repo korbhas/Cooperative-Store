@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 import CartDrawer from '@/components/CartDrawer'
 import SettingsDrawer from '@/components/SettingsDrawer'
 import MenuDrawer from '@/components/MenuDrawer'
+import OrdersDrawer from '@/components/OrdersDrawer'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList,
@@ -31,7 +32,6 @@ const STORE_PHONE_TEL = '+919876543210'
 const NAV_ITEMS = [
   { icon: IconHome, label: 'Home', href: '/' },
   { icon: IconTag, label: 'Products', href: '/products' },
-  { icon: IconClipboardList, label: 'Orders', href: '/orders', authOnly: true },
 ]
 
 export default function Navbar() {
@@ -45,6 +45,7 @@ export default function Navbar() {
   const [sticky, setSticky] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [ordersOpen, setOrdersOpen] = useState(false)
   const [categories, setCategories] = useState([])
 
   useEffect(() => { setMounted(true) }, [])
@@ -113,6 +114,7 @@ export default function Navbar() {
               categories={categories}
               signedIn={signedIn}
               onOpenSettings={() => setSettingsOpen(true)}
+              onOpenOrders={() => setOrdersOpen(true)}
               onSignOut={handleLogout}
               phone={STORE_PHONE}
               phoneTel={STORE_PHONE_TEL}
@@ -165,6 +167,19 @@ export default function Navbar() {
                 )
               })}
 
+              {/* Orders — opens the orders drawer */}
+              {signedIn && (
+                <NavigationMenuItem>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersOpen(true)}
+                    className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-background hover:text-foreground"
+                  >
+                    Orders
+                  </button>
+                </NavigationMenuItem>
+              )}
+
               {/* Settings — opens the settings drawer */}
               {signedIn && (
                 <NavigationMenuItem>
@@ -201,15 +216,17 @@ export default function Navbar() {
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
-            {/* Orders — mobile top bar only (desktop has it in the center nav).
-                Always shown; /orders is auth-gated by middleware (redirects to login). */}
-            <Link
-              href="/orders"
-              aria-label="Orders"
-              className="lg:hidden flex size-9 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
-            >
-              <IconClipboardList className="size-4" />
-            </Link>
+            {/* Orders — mobile top bar only (desktop has it in the center nav) */}
+            {signedIn && (
+              <button
+                type="button"
+                aria-label="Orders"
+                onClick={() => setOrdersOpen(true)}
+                className="lg:hidden flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted"
+              >
+                <IconClipboardList className="size-4" />
+              </button>
+            )}
 
             {/* Store phone */}
             <a
@@ -254,7 +271,7 @@ export default function Navbar() {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem render={<Link href="/orders" />}>
+                  <DropdownMenuItem onClick={() => setOrdersOpen(true)}>
                     <IconClipboardList className="size-4" /> Orders
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
@@ -280,6 +297,7 @@ export default function Navbar() {
       </div>
 
       {signedIn && <SettingsDrawer open={settingsOpen} onOpenChange={setSettingsOpen} />}
+      {signedIn && <OrdersDrawer open={ordersOpen} onOpenChange={setOrdersOpen} />}
     </header>
   )
 }

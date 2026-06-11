@@ -28,6 +28,7 @@ export default function MenuDrawer({
   categories = [],
   signedIn,
   onOpenSettings,
+  onOpenOrders,
   onSignOut,
   phone,
   phoneTel,
@@ -94,9 +95,16 @@ export default function MenuDrawer({
           </div>
 
           {signedIn && (
-            <Link href="/orders" className={itemClass} onClick={close}>
+            <button
+              type="button"
+              className={cn(itemClass, 'cursor-pointer')}
+              onClick={() => {
+                close()
+                onOpenOrders()
+              }}
+            >
               <IconClipboardList className="size-4" /> Orders
-            </Link>
+            </button>
           )}
 
           {signedIn && (

@@ -149,3 +149,54 @@ export async function POST(request) {
     return apiError(err)
   }
 }
+
+// Signed-in customer's order history (consumed by OrdersDrawer)
+export async function GET() {
+  try {
+    const { userId } = await auth()
+    if (!userId) throw new ApiError('Unauthorized', 401)
+
+    const clerkUser = await currentUser()
+    const email = clerkUser?.emailAddresses[0]?.emailAddress
+    if (!email) throw new ApiError('No email on account', 400)
+
+    const dbUser = await prisma.user.findUnique({ where: { email }, select: { id: true } })
+    if (!dbUser) return apiResponse([])
+
+    const rawOrders = await prisma.order.findMany({
+      where: { userId: dbUser.id },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: {
+          include: { product: { select: { name: true, imageUrl: true } } },
+        },
+        user: { select: { name: true, phone: true, email: true } },
+      },
+    })
+
+    return apiResponse(
+      rawOrders.map((o) => ({
+        id: o.id,
+        status: o.status,
+        totalAmount: o.totalAmount.toNumber(),
+        discountAmount: o.discountAmount.toNumber(),
+        createdAt: o.createdAt.toISOString(),
+        deliveryAddress: o.deliveryAddress,
+        customerName: o.user?.name ?? o.guestName ?? null,
+        customerPhone: o.user?.phone ?? o.guestPhone ?? null,
+        customerEmail: o.user?.email ?? o.guestEmail ?? null,
+        itemCount: o.items.length,
+        thumbUrl: o.items[0]?.product?.imageUrl ?? null,
+        items: o.items.map((i) => ({
+          id: i.id,
+          name: i.product?.name ?? 'Product',
+          variantName: i.variantName,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice.toNumber(),
+        })),
+      }))
+    )
+  } catch (err) {
+    return apiError(err)
+  }
+}

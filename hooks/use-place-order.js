@@ -71,7 +71,8 @@ export function usePlaceOrder({ onExit } = {}) {
       if (!data.razorpayOrderId) {
         finishOrder()
         onExit?.()
-        router.push(`/orders?placed=${data.orderId}`)
+        toast.success(`Order #${data.orderId} placed! Track it under Orders.`)
+        router.push('/')
         return
       }
 
@@ -105,7 +106,8 @@ export function usePlaceOrder({ onExit } = {}) {
             })
             if (vRes.ok) {
               finishOrder()
-              router.push(`/orders?paid=${data.orderId}`)
+              toast.success(`Payment successful! Order #${data.orderId} is confirmed — track it under Orders.`)
+              router.push('/')
             } else {
               toast.error('Payment verification failed. Contact support.')
             }
