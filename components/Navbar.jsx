@@ -13,6 +13,7 @@ import { useCartStore } from '@/store/cart'
 import { cn } from '@/lib/utils'
 import CartDrawer from '@/components/CartDrawer'
 import SettingsDrawer from '@/components/SettingsDrawer'
+import MenuDrawer from '@/components/MenuDrawer'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList,
@@ -247,40 +248,24 @@ export default function Navbar() {
             )}
 
             {/* Mobile hamburger */}
-            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-              <DropdownMenuTrigger
+            <MenuDrawer
+              open={menuOpen}
+              onOpenChange={setMenuOpen}
+              categories={categories}
+              signedIn={signedIn}
+              onOpenSettings={() => setSettingsOpen(true)}
+              onSignOut={handleLogout}
+              phone={STORE_PHONE}
+              phoneTel={STORE_PHONE_TEL}
+            >
+              <button
+                type="button"
                 aria-label="Menu"
-                className="lg:hidden flex size-9 items-center justify-center rounded-full border border-border bg-background outline-none"
+                className="lg:hidden flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background outline-none"
               >
                 <IconMenu2 className="size-5" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {links.map(({ icon: Icon, label, href }) => (
-                  <DropdownMenuItem key={href} render={<Link href={href} />}>
-                    <Icon className="size-4" /> {label}
-                  </DropdownMenuItem>
-                ))}
-                {signedIn && (
-                  <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                    <IconSettings className="size-4" /> Settings
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem render={<a href={`tel:${STORE_PHONE_TEL}`} />}>
-                  <IconPhone className="size-4" /> {STORE_PHONE}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {signedIn ? (
-                  <DropdownMenuItem variant="destructive" onClick={handleLogout}>
-                    <IconLogout className="size-4" /> Sign out
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem render={<Link href="/login" />}>
-                    <IconUser className="size-4" /> Sign In
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </button>
+            </MenuDrawer>
           </div>
         </nav>
       </div>
