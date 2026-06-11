@@ -5,6 +5,7 @@ import { IconCircleCheck, IconMapPin, IconCreditCard, IconPackage, IconShoppingB
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import OrderStatusTimeline from './OrderStatusTimeline'
 
 export default async function OrderDetailPage({ params, searchParams }) {
   const { userId } = await auth()
@@ -105,8 +106,9 @@ export default async function OrderDetailPage({ params, searchParams }) {
               </div>
             </div>
           </div>
-          <StatusBadge status={order.status} />
         </div>
+
+        <OrderStatusTimeline status={order.status} createdAt={order.createdAt} />
 
         <div className="flex flex-col md:flex-row gap-5">
 
@@ -217,30 +219,6 @@ export default async function OrderDetailPage({ params, searchParams }) {
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-const STATUS_STYLES = {
-  pending:          { bg: 'var(--color-fm-paper2)',     text: 'var(--color-fm-ink3)',     label: 'Pending' },
-  processing:       { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',  label: 'Processing' },
-  out_for_delivery: { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',  label: 'Out for Delivery' },
-  delivered:        { bg: 'var(--color-fm-green-soft)', text: 'var(--color-fm-green-ink)', label: 'Delivered' },
-  cancelled:        { bg: '#fdecea',                   text: '#c0392b',                  label: 'Cancelled' },
-  refunded:         { bg: '#fdecea',                   text: '#c0392b',                  label: 'Refunded' },
-}
-
-function StatusBadge({ status }) {
-  const s = STATUS_STYLES[status] ?? STATUS_STYLES.pending
-  return (
-    <div style={{
-      display: 'inline-flex', alignItems: 'center',
-      padding: '4px 12px', borderRadius: 20,
-      background: s.bg,
-      fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600,
-      color: s.text,
-    }}>
-      {s.label}
-    </div>
-  )
-}
 
 function Section({ title, icon, children }) {
   return (

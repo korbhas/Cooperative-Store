@@ -3,6 +3,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { IconHeart, IconPlus, IconMinus } from '@tabler/icons-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
 
@@ -25,8 +29,7 @@ export default function ProductCard({ product }) {
   const price = product.price
   const bgColor = CARD_COLORS[product.id % CARD_COLORS.length]
 
-  function handleAdd(e) {
-    e.preventDefault()
+  function handleAdd() {
     if (outOfStock) return
     addToCart({
       productId: product.id,
@@ -39,161 +42,121 @@ export default function ProductCard({ product }) {
     })
   }
 
-  function handleInc(e) {
-    e.preventDefault()
+  function handleInc() {
     if (cartItem) updateQuantity(cartItem.id, qty + 1)
   }
 
-  function handleDec(e) {
-    e.preventDefault()
+  function handleDec() {
     if (!cartItem) return
     if (qty <= 1) removeItem(cartItem.id)
     else updateQuantity(cartItem.id, qty - 1)
   }
 
   return (
-    <div style={{
-      borderRadius: 10, overflow: 'hidden',
-      border: '1.5px solid var(--color-fm-line-soft)',
-      background: '#fff', display: 'flex', flexDirection: 'column',
-    }}>
+    <Card size="sm" className="group h-full gap-0 overflow-hidden py-0 [--radius:0.875rem]">
       {/* Image */}
-      <div style={{ position: 'relative' }}>
-        <Link href={`/products/${product.id}`} style={{ display: 'block', textDecoration: 'none' }}>
-          <div style={{
-            position: 'relative', aspectRatio: '1 / 1', overflow: 'hidden',
-            background: product.imageUrl ? 'var(--color-fm-paper)' : bgColor,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
+      <div className="relative p-2">
+        <Link href={`/products/${product.id}`} className="block">
+          <div
+            className="relative aspect-square overflow-hidden rounded-lg"
+            style={{ background: product.imageUrl ? 'var(--muted)' : bgColor }}
+          >
             {product.imageUrl ? (
               <Image
                 src={product.imageUrl}
                 alt={product.name}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 192px"
-                style={{ objectFit: 'cover' }}
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <span style={{ fontSize: 34 }}>🛒</span>
+              <span className="absolute inset-0 flex items-center justify-center text-4xl">🛒</span>
             )}
           </div>
         </Link>
 
         {/* Wishlist */}
-        <button
-          onClick={(e) => { e.preventDefault(); toggle(product.id) }}
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          onClick={() => toggle(product.id)}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          style={{
-            position: 'absolute', top: 6, right: 6,
-            width: 28, height: 28, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.92)', border: 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', padding: 0,
-            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-          }}
+          aria-pressed={wishlisted}
+          className="absolute top-3.5 right-3.5 rounded-full bg-white/90 shadow-sm hover:bg-white"
         >
           <IconHeart
-            size={13}
-            fill={wishlisted ? 'var(--color-fm-accent)' : 'none'}
-            color={wishlisted ? 'var(--color-fm-accent)' : 'var(--color-fm-ink3)'}
+            className={cn(
+              'size-4',
+              wishlisted ? 'fill-accent text-accent' : 'text-muted-foreground'
+            )}
           />
-        </button>
+        </Button>
 
-        {/* Out of stock overlay */}
+        {/* Out of stock */}
         {outOfStock && (
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0,
-            background: 'rgba(0,0,0,0.48)', color: '#fff',
-            fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
-            textAlign: 'center', padding: '4px 0', letterSpacing: 0.3,
-          }}>
-            Out of Stock
-          </div>
+          <Badge className="absolute bottom-3.5 left-3.5 border-transparent bg-foreground/70 text-background">
+            Out of stock
+          </Badge>
         )}
       </div>
 
       {/* Info */}
-      <div style={{ padding: '10px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <CardContent className="flex flex-1 flex-col gap-1 pt-1 pb-2">
         {product.category && (
-          <div style={{
-            fontFamily: 'var(--font-mono)', fontSize: 9,
-            color: 'var(--color-fm-ink3)', letterSpacing: 0.8,
-            textTransform: 'uppercase',
-          }}>
+          <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
             {product.category.name}
-          </div>
+          </span>
         )}
 
-        <Link href={`/products/${product.id}`} style={{
-          fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600,
-          color: 'var(--color-fm-ink)', textDecoration: 'none', lineHeight: 1.3,
-          display: '-webkit-box', WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          flex: 1,
-        }}>
+        <Link
+          href={`/products/${product.id}`}
+          className="line-clamp-2 text-[13px] leading-snug font-semibold hover:underline"
+        >
           {product.name}
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
-          {/* Price */}
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-heading)', fontSize: 15,
-              fontWeight: 700, color: 'var(--color-fm-ink)',
-            }}>
-              ₹{price % 1 === 0 ? price : price.toFixed(2)}
-            </div>
-            <div style={{ fontFamily: 'var(--font-sans)', fontSize: 10, color: 'var(--color-fm-ink3)' }}>
-              /{product.unit}
-            </div>
-          </div>
-
-          {/* Cart control */}
-          {qty === 0 ? (
-            <button
-              onClick={handleAdd}
-              disabled={outOfStock}
-              aria-label="Add to cart"
-              style={{
-                width: 32, height: 32, borderRadius: 8,
-                background: outOfStock ? 'var(--color-fm-line-soft)' : 'var(--color-fm-green)',
-                border: 'none', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: outOfStock ? 'default' : 'pointer', flexShrink: 0,
-              }}
-            >
-              <IconPlus size={16} />
-            </button>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <button onClick={handleDec} aria-label="Decrease quantity" style={{
-                width: 26, height: 26, borderRadius: 7,
-                background: 'var(--color-fm-green-soft)',
-                border: '1.5px solid var(--color-fm-green-ink)',
-                color: 'var(--color-fm-green-ink)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', padding: 0,
-              }}>
-                <IconMinus size={12} />
-              </button>
-              <span style={{
-                fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 700,
-                color: 'var(--color-fm-ink)', minWidth: 20, textAlign: 'center',
-              }}>
-                {qty}
-              </span>
-              <button onClick={handleInc} aria-label="Increase quantity" style={{
-                width: 26, height: 26, borderRadius: 7,
-                background: 'var(--color-fm-green)', border: 'none', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', padding: 0,
-              }}>
-                <IconPlus size={12} />
-              </button>
-            </div>
-          )}
+        <div className="mt-auto flex items-baseline gap-1 pt-1">
+          <span className="font-heading text-base font-bold">
+            ₹{price % 1 === 0 ? price : price.toFixed(2)}
+          </span>
+          <span className="text-[11px] text-muted-foreground">/{product.unit}</span>
         </div>
+      </CardContent>
+
+      {/* Action */}
+      <div className="p-2 pt-0">
+        {qty === 0 ? (
+          <Button
+            size="sm"
+            className="w-full"
+            disabled={outOfStock}
+            onClick={handleAdd}
+          >
+            <IconPlus className="size-4" /> Add to cart
+          </Button>
+        ) : (
+          <div className="flex items-center justify-between gap-1 rounded-lg bg-secondary p-1">
+            <Button
+              variant="secondary"
+              size="icon-sm"
+              onClick={handleDec}
+              aria-label="Decrease quantity"
+              className="bg-white text-secondary-foreground hover:bg-white"
+            >
+              <IconMinus className="size-4" />
+            </Button>
+            <span className="text-sm font-bold tabular-nums text-secondary-foreground">{qty}</span>
+            <Button
+              size="icon-sm"
+              onClick={handleInc}
+              aria-label="Increase quantity"
+            >
+              <IconPlus className="size-4" />
+            </Button>
+          </div>
+        )}
       </div>
-    </div>
+    </Card>
   )
 }

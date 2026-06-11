@@ -49,24 +49,25 @@
 }
 
 :root {
-  --background: oklch(100% 0.00011 271.152 / 0.869);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* FreshMart brand mapped into shadcn semantic tokens */
+  --background: #fafaf6;          /* fm-paper */
+  --foreground: #1f2520;          /* fm-ink */
+  --card: #ffffff;
+  --card-foreground: #1f2520;
+  --popover: #ffffff;
+  --popover-foreground: #1f2520;
+  --primary: #1f4d34;             /* fm-green */
+  --primary-foreground: #ffffff;
+  --secondary: #e6efe6;           /* fm-green-soft */
+  --secondary-foreground: #2a6a47;/* fm-green-ink */
+  --muted: #f1f1ea;               /* fm-paper2 */
+  --muted-foreground: #8a948c;    /* fm-ink3 */
+  --accent: #d3893a;              /* fm-accent */
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: rgba(31, 37, 32, 0.18); /* fm-line-soft */
+  --input: rgba(31, 37, 32, 0.18);
+  --ring: #1f4d34;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
