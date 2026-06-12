@@ -20,7 +20,7 @@ export default function Error({ error, reset }) {
       padding: 16,
       fontFamily: 'var(--font-sans)',
     }}>
-      <Alert variant="destructive" className="max-w-md bg-white">
+      <Alert variant="destructive" className="max-w-md bg-card">
         <IconAlertCircle />
         <AlertTitle>Something went wrong</AlertTitle>
         <AlertDescription>

@@ -25,8 +25,8 @@ const PILL = {
   processing:       { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',   label: 'Processing' },
   out_for_delivery: { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',   label: 'Out for Delivery' },
   delivered:        { bg: 'var(--color-fm-green-soft)',  text: 'var(--color-fm-green-ink)', label: 'Delivered' },
-  cancelled:        { bg: '#fdecea',                      text: '#c0392b',                  label: 'Cancelled' },
-  refunded:         { bg: '#fdecea',                      text: '#c0392b',                  label: 'Refunded' },
+  cancelled:        { bg: 'var(--color-fm-danger-soft)',  text: 'var(--color-fm-danger)',   label: 'Cancelled' },
+  refunded:         { bg: 'var(--color-fm-danger-soft)',  text: 'var(--color-fm-danger)',   label: 'Refunded' },
 }
 
 function StatusPill({ status }) {
@@ -65,7 +65,7 @@ export default function OrderStatusTimeline({ status, createdAt, defaultOpen = f
 
       <CollapsibleContent className="border-t border-border px-4 py-4">
         {terminalBad ? (
-          <div className="flex items-start gap-2 text-sm" style={{ color: '#c0392b' }}>
+          <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-fm-danger)' }}>
             <IconAlertCircle className="mt-0.5 size-4 shrink-0" />
             <span>
               This order was {PILL[status].label.toLowerCase()}.

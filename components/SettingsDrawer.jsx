@@ -1,12 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { IconLogout, IconUser } from '@tabler/icons-react'
+import { IconLogout, IconUser, IconMoon } from '@tabler/icons-react'
 import { useUser, useClerk } from '@clerk/nextjs'
+import { useTheme } from 'next-themes'
 import AddressForm from '@/components/checkout/AddressForm'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import {
   Drawer,
   DrawerContent,
@@ -22,6 +25,10 @@ export default function SettingsDrawer({ open, onOpenChange }) {
   const router = useRouter()
   const { user } = useUser()
   const { signOut, openUserProfile } = useClerk()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   const displayName = user?.fullName || user?.firstName || 'User'
   const email = user?.primaryEmailAddress?.emailAddress ?? ''
@@ -62,6 +69,19 @@ export default function SettingsDrawer({ open, onOpenChange }) {
             <Button variant="outline" size="sm" onClick={handleManageAccount}>
               Manage
             </Button>
+          </div>
+
+          {/* Appearance */}
+          <div className="flex items-center justify-between rounded-lg border border-border p-3">
+            <div className="flex items-center gap-2">
+              <IconMoon className="size-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Dark Mode</span>
+            </div>
+            <Switch
+              checked={mounted && resolvedTheme === 'dark'}
+              onCheckedChange={(on) => setTheme(on ? 'dark' : 'light')}
+              aria-label="Toggle dark mode"
+            />
           </div>
 
           {/* Default delivery details */}

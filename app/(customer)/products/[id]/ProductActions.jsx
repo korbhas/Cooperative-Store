@@ -77,7 +77,7 @@ export default function ProductActions({ product, variants }) {
                     border: selected
                       ? '2px solid var(--color-fm-green)'
                       : '1.5px solid var(--color-fm-line-soft)',
-                    background: selected ? 'var(--color-fm-green-soft)' : '#fff',
+                    background: selected ? 'var(--color-fm-green-soft)' : 'var(--color-fm-card)',
                     fontFamily: 'var(--font-sans)',
                     fontSize: 13,
                     fontWeight: selected ? 600 : 400,
@@ -118,7 +118,7 @@ export default function ProductActions({ product, variants }) {
       {/* Stock status */}
       <div>
         {outOfStock ? (
-          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 99, background: '#fee2e2', color: '#991b1b', fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600 }}>
+          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 99, background: 'var(--color-fm-danger-soft)', color: 'var(--color-fm-danger)', fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600 }}>
             Out of Stock
           </span>
         ) : effectiveStock <= 10 ? (
@@ -166,7 +166,7 @@ export default function ProductActions({ product, variants }) {
               onClick={handleDec}
               style={{
                 width: 36, height: 36, borderRadius: 8,
-                background: '#fff', border: '1.5px solid var(--color-fm-green-ink)',
+                background: 'var(--color-fm-card)', border: '1.5px solid var(--color-fm-green-ink)',
                 color: 'var(--color-fm-green-ink)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', padding: 0,
@@ -196,7 +196,7 @@ export default function ProductActions({ product, variants }) {
           onClick={() => toggle(product.id)}
           style={{
             width: 50, height: 50, borderRadius: 10, flexShrink: 0,
-            background: wishlisted ? 'var(--color-fm-accent-soft)' : '#fff',
+            background: wishlisted ? 'var(--color-fm-accent-soft)' : 'var(--color-fm-card)',
             border: `1.5px solid ${wishlisted ? 'var(--color-fm-accent)' : 'var(--color-fm-line-soft)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', padding: 0,

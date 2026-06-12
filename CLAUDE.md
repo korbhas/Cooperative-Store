@@ -76,6 +76,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 ```
 - shadcn semantic tokens (`--background`, `--border`, …) in `app/globals.css` map FreshMart colors and **must hold complete color values** (hex/rgba/oklch). Raw HSL triplets break Tailwind v4 — borders fall back to `currentColor` (near-black)
 - Radius scale derives from `--radius: 0.375rem` (slight rounding everywhere; `rounded-xl` = ×1.4). `ProductCard` overrides locally with `[--radius:0.875rem]`
+- **Dark mode**: `next-themes` (`attribute="class"`, default `light`, opt-in via SettingsDrawer switch). The `.dark` block in globals.css overrides BOTH shadcn semantic tokens and fm tokens with a green-tinted dark palette. Extra theming vars: `--color-fm-card` (#fff / #1b201b — use instead of hardcoded `#fff` backgrounds), `--color-fm-danger(-soft)` (error pills), `--product-tint` (mutes ProductCard pastels in dark). White text on `fm-green`/`fm-accent` button backgrounds is theme-safe. Known limitation: Clerk login/register `appearance` objects are hardcoded light
 
 ## App Structure (Route Groups)
 ```
@@ -102,7 +103,7 @@ app/
 | `CartDrawer` | right | Full cart + **in-drawer checkout**: cart → address → payment (Razorpay). Signed-out checkout redirects to `/login?returnTo=/checkout/address`. Closes itself before the Razorpay modal opens (`usePlaceOrder({ onExit })`) |
 | `OrdersDrawer` | right | Order history (fetches `GET /api/orders` on open): list of orders → per-order detail view with status timeline (expanded), items, totals, `AddressCard` |
 | `MenuDrawer` | left | Mobile nav: nested Products→categories section, Orders, Settings, phone, auth |
-| `SettingsDrawer` | left | Account (Clerk `openUserProfile()`) + default delivery details (`AddressForm` → checkout store) + sign out. No `/settings` page |
+| `SettingsDrawer` | left | Account (Clerk `openUserProfile()`) + dark mode switch (`next-themes`) + default delivery details (`AddressForm` → checkout store) + sign out. No `/settings` page |
 
 Page-based checkout (`/checkout/address` → `/checkout/payment`) still exists and shares the same logic as the drawer flow.
 

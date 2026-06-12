@@ -24,8 +24,8 @@ const STATUS_STYLES = {
   processing:       { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',    label: 'Processing' },
   out_for_delivery: { bg: 'var(--color-fm-accent-soft)', text: 'var(--color-fm-accent)',    label: 'Out for Delivery' },
   delivered:        { bg: 'var(--color-fm-green-soft)',  text: 'var(--color-fm-green-ink)', label: 'Delivered' },
-  cancelled:        { bg: '#fdecea',                    text: '#c0392b',                   label: 'Cancelled' },
-  refunded:         { bg: '#fdecea',                    text: '#c0392b',                   label: 'Refunded' },
+  cancelled:        { bg: 'var(--color-fm-danger-soft)', text: 'var(--color-fm-danger)',   label: 'Cancelled' },
+  refunded:         { bg: 'var(--color-fm-danger-soft)', text: 'var(--color-fm-danger)',   label: 'Refunded' },
 }
 
 function StatusBadge({ status }) {

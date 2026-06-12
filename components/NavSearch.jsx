@@ -33,7 +33,7 @@ export default function NavSearch() {
     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 12px' }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 7,
-        background: '#fff', border: '1.5px solid var(--color-fm-line-soft)',
+        background: 'var(--color-fm-card)', border: '1.5px solid var(--color-fm-line-soft)',
         borderRadius: 8, padding: '0 10px', height: 32, width: '100%', maxWidth: 280,
       }}>
         <IconSearch size={13} style={{ color: 'var(--color-fm-ink3)', flexShrink: 0 }} />

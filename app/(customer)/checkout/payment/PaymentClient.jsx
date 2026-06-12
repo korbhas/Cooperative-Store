@@ -98,7 +98,7 @@ export default function PaymentClient({ deliveryFee: deliveryFeeConfig, freeDeli
       {/* Right — order summary + pay */}
       <div className="w-full md:w-80 md:flex-none">
         <div style={{
-          background: '#fff', borderRadius: 12,
+          background: 'var(--color-fm-card)', borderRadius: 12,
           border: '1.5px solid var(--color-fm-line-soft)',
           padding: '20px', position: 'sticky', top: 64,
         }}>

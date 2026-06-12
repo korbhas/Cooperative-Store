@@ -1,6 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/react'
 import { JetBrains_Mono } from 'next/font/google'
+import ThemeProvider from '@/components/ThemeProvider'
 import './globals.css'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -17,9 +18,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`h-full ${jetbrainsMono.variable}`}>
+      <html lang="en" className={`h-full ${jetbrainsMono.variable}`} suppressHydrationWarning>
         <body style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
-          {children}
+          <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
           <Analytics />
         </body>
       </html>

@@ -10,7 +10,16 @@ export default function CustomerLayout({ children }) {
         {children}
       </main>
       <Footer />
-      <Toaster position="bottom-right" />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'var(--color-fm-card)',
+            color: 'var(--color-fm-ink)',
+            border: '1px solid var(--color-fm-line-soft)',
+          },
+        }}
+      />
     </div>
   )
 }

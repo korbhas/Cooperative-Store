@@ -59,7 +59,7 @@ export default function ProductCard({ product }) {
         <Link href={`/products/${product.id}`} className="block">
           <div
             className="relative aspect-square overflow-hidden rounded-lg"
-            style={{ background: product.imageUrl ? 'var(--muted)' : bgColor }}
+            style={{ background: product.imageUrl ? 'var(--muted)' : `var(--product-tint, ${bgColor})` }}
           >
             {product.imageUrl ? (
               <Image
@@ -83,7 +83,7 @@ export default function ProductCard({ product }) {
           onClick={() => toggle(product.id)}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           aria-pressed={wishlisted}
-          className="absolute top-3.5 right-3.5 rounded-full bg-white/90 shadow-sm hover:bg-white"
+          className="absolute top-3.5 right-3.5 rounded-full bg-card/90 shadow-sm hover:bg-card"
         >
           <IconHeart
             className={cn(
@@ -142,7 +142,7 @@ export default function ProductCard({ product }) {
               size="icon-sm"
               onClick={handleDec}
               aria-label="Decrease quantity"
-              className="bg-white text-secondary-foreground hover:bg-white"
+              className="bg-card text-secondary-foreground hover:bg-card"
             >
               <IconMinus className="size-4" />
             </Button>

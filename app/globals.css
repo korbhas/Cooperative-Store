@@ -85,24 +85,25 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* FreshMart dark palette — green-tinted near-black surfaces, light ink */
+  --background: #131613;          /* fm-paper dark */
+  --foreground: #e8ebe8;          /* fm-ink dark */
+  --card: #1b201b;
+  --card-foreground: #e8ebe8;
+  --popover: #1b201b;
+  --popover-foreground: #e8ebe8;
+  --primary: #3e8e63;             /* lighter fm-green for dark bg */
+  --primary-foreground: #ffffff;
+  --secondary: #1d2b22;           /* fm-green-soft dark */
+  --secondary-foreground: #7fbf9b;/* fm-green-ink dark */
+  --muted: #1b201b;               /* fm-paper2 dark */
+  --muted-foreground: #7c857d;    /* fm-ink3 dark */
+  --accent: #d3893a;              /* fm-accent (works on dark) */
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: rgba(232, 235, 232, 0.16); /* fm-line-soft dark */
+  --input: rgba(232, 235, 232, 0.16);
+  --ring: #3e8e63;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -116,6 +117,21 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* FreshMart brand tokens — dark overrides */
+  --color-fm-green-soft: #1d2b22;
+  --color-fm-green-ink: #7fbf9b;
+  --color-fm-accent-soft: #2f2417;
+  --color-fm-paper: #131613;
+  --color-fm-paper2: #1b201b;
+  --color-fm-ink: #e8ebe8;
+  --color-fm-ink2: #aab3ab;
+  --color-fm-ink3: #7c857d;
+  --color-fm-line-soft: rgba(232, 235, 232, 0.16);
+  --color-fm-card: #1b201b;
+  --color-fm-danger-soft: #3a1f1d;
+  --color-fm-danger: #e08a80;
+  --product-tint: #1b201b;        /* mutes ProductCard pastel backdrops */
 }
 
 /* ─── FreshMart Design Tokens ──────────────────────────────────────────────── */
@@ -131,6 +147,9 @@
   --color-fm-ink2: #4a544c;
   --color-fm-ink3: #8a948c;
   --color-fm-line-soft: rgba(31, 37, 32, 0.18);
+  --color-fm-card: #ffffff;
+  --color-fm-danger-soft: #fdecea;
+  --color-fm-danger: #c0392b;
   --font-sans: 'Okra', Helvetica, sans-serif;
   --font-heading: 'Okra', Helvetica, sans-serif;
   --font-mono: var(--font-jbmono), monospace;
