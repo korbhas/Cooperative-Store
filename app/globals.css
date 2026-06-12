@@ -117,21 +117,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-
-  /* FreshMart brand tokens — dark overrides */
-  --color-fm-green-soft: #1d2b22;
-  --color-fm-green-ink: #7fbf9b;
-  --color-fm-accent-soft: #2f2417;
-  --color-fm-paper: #131613;
-  --color-fm-paper2: #1b201b;
-  --color-fm-ink: #e8ebe8;
-  --color-fm-ink2: #aab3ab;
-  --color-fm-ink3: #7c857d;
-  --color-fm-line-soft: rgba(232, 235, 232, 0.16);
-  --color-fm-card: #1b201b;
-  --color-fm-danger-soft: #3a1f1d;
-  --color-fm-danger: #e08a80;
-  --product-tint: #1b201b;        /* mutes ProductCard pastel backdrops */
 }
 
 /* ─── FreshMart Design Tokens ──────────────────────────────────────────────── */
@@ -153,6 +138,25 @@
   --font-sans: 'Okra', Helvetica, sans-serif;
   --font-heading: 'Okra', Helvetica, sans-serif;
   --font-mono: var(--font-jbmono), monospace;
+}
+
+/* FreshMart brand tokens — dark overrides.
+   Must come AFTER the :root block above: .dark and :root both match <html>
+   with equal specificity, so source order decides which value wins. */
+.dark {
+  --color-fm-green-soft: #1d2b22;
+  --color-fm-green-ink: #7fbf9b;
+  --color-fm-accent-soft: #2f2417;
+  --color-fm-paper: #131613;
+  --color-fm-paper2: #1b201b;
+  --color-fm-ink: #e8ebe8;
+  --color-fm-ink2: #aab3ab;
+  --color-fm-ink3: #7c857d;
+  --color-fm-line-soft: rgba(232, 235, 232, 0.16);
+  --color-fm-card: #1b201b;
+  --color-fm-danger-soft: #3a1f1d;
+  --color-fm-danger: #e08a80;
+  --product-tint: #1b201b;        /* mutes ProductCard pastel backdrops */
 }
 
 @layer base {
