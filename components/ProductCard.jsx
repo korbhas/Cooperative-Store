@@ -50,10 +50,10 @@ export default function ProductCard({ product }) {
   return (
     <Card size="sm" className="group h-full gap-0 overflow-hidden py-0 [--radius:0.875rem]">
       {/* Image */}
-      <div className="relative p-2">
+      <div className="relative">
         <Link href={`/products/${product.id}`} className="block">
           <div
-            className="relative aspect-square overflow-hidden rounded-[var(--radius)]"
+            className="relative aspect-square overflow-hidden rounded-t-[var(--radius)]"
             style={{ background: product.imageUrl ? 'var(--muted)' : `var(--product-tint, ${bgColor})` }}
           >
             {product.imageUrl ? (
@@ -72,7 +72,7 @@ export default function ProductCard({ product }) {
 
         {/* Out of stock */}
         {outOfStock && (
-          <Badge className="absolute bottom-3.5 left-3.5 border-transparent bg-foreground/70 text-background">
+          <Badge className="absolute bottom-2 left-2 border-transparent bg-foreground/70 text-background">
             Out of stock
           </Badge>
         )}
