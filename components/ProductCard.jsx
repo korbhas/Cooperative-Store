@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { useShallow } from 'zustand/react/shallow'
 import { useCartStore } from '@/store/cart'
 
 const CARD_COLORS = [
@@ -15,11 +16,10 @@ const CARD_COLORS = [
 ]
 
 export default function ProductCard({ product }) {
-  const addToCart = useCartStore((s) => s.addToCart)
-  const items = useCartStore((s) => s.items)
-  const updateQuantity = useCartStore((s) => s.updateQuantity)
-  const removeItem = useCartStore((s) => s.removeItem)
-  const cartItem = items.find((i) => i.productId === product.id && !i.variantId)
+  const { addToCart, updateQuantity, removeItem } = useCartStore(
+    useShallow((s) => ({ addToCart: s.addToCart, updateQuantity: s.updateQuantity, removeItem: s.removeItem }))
+  )
+  const cartItem = useCartStore((s) => s.items.find((i) => i.productId === product.id && !i.variantId))
   const qty = cartItem?.quantity ?? 0
   const outOfStock = product.stockQty === 0
   const price = product.price
