@@ -6,6 +6,7 @@ import { IconPlus, IconMinus } from '@tabler/icons-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { useCartStore } from '@/store/cart'
 
 const CARD_COLORS = [
@@ -79,7 +80,7 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Info */}
-      <CardContent className="flex flex-1 flex-col gap-1 pt-1 pb-2">
+      <CardContent className="flex flex-1 flex-col gap-1 px-3 pt-3 pb-0">
         {product.category && (
           <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
             {product.category.name}
@@ -101,8 +102,10 @@ export default function ProductCard({ product }) {
         </div>
       </CardContent>
 
+      <Separator className="mt-3" />
+
       {/* Action */}
-      <div className="p-2 pt-0">
+      <div className="p-3">
         {qty === 0 ? (
           <Button
             size="sm"
