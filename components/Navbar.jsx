@@ -231,10 +231,10 @@ export default function Navbar() {
             {/* Store phone */}
             <a
               href={`tel:${STORE_PHONE_TEL}`}
-              className="hidden items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted md:inline-flex"
+              aria-label="Call store"
+              className="hidden size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-muted md:inline-flex"
             >
               <IconPhone className="size-4" style={{ color: 'var(--color-fm-green)' }} />
-              {STORE_PHONE}
             </a>
 
             {/* Cart */}
