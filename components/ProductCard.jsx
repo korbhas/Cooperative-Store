@@ -48,7 +48,7 @@ export default function ProductCard({ product }) {
   }
 
   return (
-    <Card size="sm" className="group h-full gap-0 overflow-hidden py-0 [--radius:0.875rem]">
+    <Card size="sm" className="group h-full gap-0 overflow-hidden py-0">
       {/* Image */}
       <div className="relative">
         <Link href={`/products/${product.id}`} className="block">

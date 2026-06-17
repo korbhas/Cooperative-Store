@@ -75,7 +75,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 --font-mono: 'JetBrains Mono'
 ```
 - shadcn semantic tokens (`--background`, `--border`, …) in `app/globals.css` map FreshMart colors and **must hold complete color values** (hex/rgba/oklch). Raw HSL triplets break Tailwind v4 — borders fall back to `currentColor` (near-black)
-- Radius scale derives from `--radius: 0.375rem` (slight rounding everywhere; `rounded-xl` = ×1.4). `ProductCard` overrides locally with `[--radius:0.875rem]`
+- Radius scale derives from `--radius: 0.375rem` (slight rounding everywhere; `rounded-xl` = ×1.4). All components follow this — no local overrides.
 - **Dark mode**: `next-themes` (`attribute="class"`, default `light`, opt-in via SettingsDrawer switch). The `.dark` block in globals.css overrides BOTH shadcn semantic tokens and fm tokens with a green-tinted dark palette. Extra theming vars: `--color-fm-card` (#fff / #1b201b — use instead of hardcoded `#fff` backgrounds), `--color-fm-danger(-soft)` (error pills), `--product-tint` (mutes ProductCard pastels in dark). White text on `fm-green`/`fm-accent` button backgrounds is theme-safe. Known limitation: Clerk login/register `appearance` objects are hardcoded light
 
 ## App Structure (Route Groups)
@@ -120,7 +120,7 @@ Page-based checkout (`/checkout/address` → `/checkout/payment`) still exists a
 | `HeroCarousel` | Server (embla client primitives) | Home hero: looping promo slides (flash sale / free delivery / new in), replaced PromoBanners |
 | `CategoryCards` | Client | Home category section: motion stagger, horizontal scroll cards |
 | `CategoryFilter` / `SortSelect` | Server / Client | Products page filtering (wrap SortSelect in `<Suspense>`) |
-| `ProductCard` | Client | Product tile, add-to-cart stepper, local radius override |
+| `ProductCard` | Client | Product tile, add-to-cart stepper |
 | `AddressCard` | Server-safe | Read-only address display (icon rows: name/address/phone/email), used in OrdersDrawer |
 | `OrderStatusTimeline` | Client | Collapsible status timeline (`defaultOpen`, `className` props) |
 | `CheckoutSteps` | Client | Step indicator for page-based checkout |
