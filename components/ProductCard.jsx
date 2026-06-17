@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
       <div className="relative p-2">
         <Link href={`/products/${product.id}`} className="block">
           <div
-            className="relative aspect-square overflow-hidden rounded-lg"
+            className="relative aspect-square overflow-hidden rounded-[var(--radius)]"
             style={{ background: product.imageUrl ? 'var(--muted)' : `var(--product-tint, ${bgColor})` }}
           >
             {product.imageUrl ? (
