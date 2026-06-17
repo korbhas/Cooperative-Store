@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { IconHeart, IconPlus, IconMinus, IconShoppingCart } from '@tabler/icons-react'
+import { IconPlus, IconMinus, IconShoppingCart } from '@tabler/icons-react'
 import { useCartStore } from '@/store/cart'
-import { useWishlistStore } from '@/store/wishlist'
 
 export default function ProductActions({ product, variants }) {
   const [mounted, setMounted] = useState(false)
@@ -14,9 +13,6 @@ export default function ProductActions({ product, variants }) {
   const items = useCartStore((s) => s.items)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
-  const toggle = useWishlistStore((s) => s.toggle)
-  const wishlisted = useWishlistStore((s) => s.isWishlisted(product.id))
-
   useEffect(() => { setMounted(true) }, [])
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) ?? null
@@ -132,7 +128,7 @@ export default function ProductActions({ product, variants }) {
         )}
       </div>
 
-      {/* Cart + Wishlist */}
+      {/* Cart */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         {!mounted || qty === 0 ? (
           <button
@@ -191,23 +187,6 @@ export default function ProductActions({ product, variants }) {
           </div>
         )}
 
-        {/* Wishlist */}
-        <button
-          onClick={() => toggle(product.id)}
-          style={{
-            width: 50, height: 50, borderRadius: 10, flexShrink: 0,
-            background: wishlisted ? 'var(--color-fm-accent-soft)' : 'var(--color-fm-card)',
-            border: `1.5px solid ${wishlisted ? 'var(--color-fm-accent)' : 'var(--color-fm-line-soft)'}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', padding: 0,
-          }}
-        >
-          <IconHeart
-            size={19}
-            fill={wishlisted ? 'var(--color-fm-accent)' : 'none'}
-            color={wishlisted ? 'var(--color-fm-accent)' : 'var(--color-fm-ink3)'}
-          />
-        </button>
       </div>
     </div>
   )

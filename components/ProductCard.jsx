@@ -2,13 +2,11 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { IconHeart, IconPlus, IconMinus } from '@tabler/icons-react'
+import { IconPlus, IconMinus } from '@tabler/icons-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
 import { useCartStore } from '@/store/cart'
-import { useWishlistStore } from '@/store/wishlist'
 
 const CARD_COLORS = [
   '#e6efe6', '#fef3e2', '#e8effe', '#fce7f3',
@@ -20,9 +18,6 @@ export default function ProductCard({ product }) {
   const items = useCartStore((s) => s.items)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
-  const toggle = useWishlistStore((s) => s.toggle)
-  const wishlisted = useWishlistStore((s) => s.isWishlisted(product.id))
-
   const cartItem = items.find((i) => i.productId === product.id && !i.variantId)
   const qty = cartItem?.quantity ?? 0
   const outOfStock = product.stockQty === 0
@@ -74,24 +69,6 @@ export default function ProductCard({ product }) {
             )}
           </div>
         </Link>
-
-        {/* Wishlist */}
-        <Button
-          type="button"
-          variant="secondary"
-          size="icon-sm"
-          onClick={() => toggle(product.id)}
-          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          aria-pressed={wishlisted}
-          className="absolute top-3.5 right-3.5 rounded-full bg-card/90 shadow-sm hover:bg-card"
-        >
-          <IconHeart
-            className={cn(
-              'size-4',
-              wishlisted ? 'fill-accent text-accent' : 'text-muted-foreground'
-            )}
-          />
-        </Button>
 
         {/* Out of stock */}
         {outOfStock && (

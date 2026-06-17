@@ -45,11 +45,11 @@ model User {
   passwordHash  String?
   emailVerified Boolean    @default(false)
   isBanned      Boolean    @default(false)
+  loyaltyPoints Int        @default(0)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   orders        Order[]
   cartItems     CartItem[]
-  wishlists     Wishlist[]
 
   @@map("users")
 }
@@ -83,7 +83,6 @@ model Product {
   variants    ProductVariant[]
   orderItems  OrderItem[]
   cartItems   CartItem[]
-  wishlists   Wishlist[]
 
   @@map("products")
 }
@@ -117,6 +116,8 @@ model Order {
   guestEmail        String?
   guestPhone        String?
   discountAmount    Decimal       @db.Decimal(10, 2) @default(0)
+  pointsEarned      Int           @default(0)
+  pointsRedeemed    Int           @default(0)
   couponId          Int?
   deliveryAgentId   Int?
   createdAt         DateTime      @default(now())
@@ -171,18 +172,6 @@ model CartItem {
 
   @@unique([userId, productId])
   @@map("cart_items")
-}
-
-model Wishlist {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  productId Int
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, productId])
-  @@map("wishlists")
 }
 
 model DeliveryAgent {

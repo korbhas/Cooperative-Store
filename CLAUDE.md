@@ -12,7 +12,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 | Database | Supabase (hosted Postgres) |
 | ORM | Prisma 7 with `prisma-client-js` + `@prisma/adapter-pg` (PrismaPg) |
 | Auth | **Both customer + admin:** Clerk (`@clerk/nextjs`) |
-| State | Zustand with persist middleware (`store/cart.js`, `store/wishlist.js`, `store/checkout.js`) |
+| State | Zustand with persist middleware (`store/cart.js`, `store/checkout.js`) |
 | Images | Cloudinary (`lib/cloudinary.js`) |
 | Payments | Razorpay — checkout, verification (`/api/orders/verify`), webhook (`/api/webhooks/razorpay`) |
 | Styling | Tailwind v4 + shadcn/ui (base-nova style) + FreshMart design tokens |
@@ -40,7 +40,7 @@ A grocery e-commerce app (Next.js 16 App Router, plain JS) replicating github.co
 - Guard helper: `lib/admin-guard.js` → `requireAdmin()` for API routes
 - Protected layout: `app/admin/(protected)/layout.jsx` redirects non-admins to `/`
 
-**Middleware** (`middleware.js`): `clerkMiddleware` protects `/admin/*` and customer routes (`/settings`, `/wishlist`, `/checkout`). Signed-in users hitting `/welcome` are redirected to `/`; the first-visit welcome overlay for signed-out users is handled on the home page via cookie (`WelcomeOverlay`), not by middleware redirect.
+**Middleware** (`middleware.js`): `clerkMiddleware` protects `/admin/*` and customer routes (`/settings`, `/checkout`). Signed-in users hitting `/welcome` are redirected to `/`; the first-visit welcome overlay for signed-out users is handled on the home page via cookie (`WelcomeOverlay`), not by middleware redirect.
 
 ### shadcn/ui (base-nova style)
 - `components.json`: `tsx: false` — the CLI generates plain `.jsx`
@@ -120,7 +120,7 @@ Page-based checkout (`/checkout/address` → `/checkout/payment`) still exists a
 | `HeroCarousel` | Server (embla client primitives) | Home hero: looping promo slides (flash sale / free delivery / new in), replaced PromoBanners |
 | `CategoryCards` | Client | Home category section: motion stagger, horizontal scroll cards |
 | `CategoryFilter` / `SortSelect` | Server / Client | Products page filtering (wrap SortSelect in `<Suspense>`) |
-| `ProductCard` | Client | Product tile, add-to-cart stepper, wishlist toggle, local radius override |
+| `ProductCard` | Client | Product tile, add-to-cart stepper, local radius override |
 | `AddressCard` | Server-safe | Read-only address display (icon rows: name/address/phone/email), used in OrdersDrawer |
 | `OrderStatusTimeline` | Client | Collapsible status timeline (`defaultOpen`, `className` props) |
 | `CheckoutSteps` | Client | Step indicator for page-based checkout |
@@ -130,11 +130,18 @@ Page-based checkout (`/checkout/address` → `/checkout/payment`) still exists a
 
 ## Stores (Zustand + persist)
 - **`store/cart.js`** — `addToCart({productId, variantId, name, price, unit, imageUrl, stockQty}, qty)` · `updateQuantity(id, qty)` · `removeItem(id)` · `clearCart()` · `totalAmount()` · `totalItems()` (stock-capped)
-- **`store/wishlist.js`** — `toggle(productId)` · `isWishlisted(productId)` · `clear()`
 - **`store/checkout.js`** — `address` ({name, phone, address}) · `coupon` · `setAddress` · `setCoupon` · `clear()`. Shared by page checkout, drawer checkout, and SettingsDrawer ("default delivery details" are device-local; DB user phone is upserted at order time)
 
+## Loyalty Points
+Earn **10 pts per full ₹100** of final order total; redeem **10 pts = ₹1** directly at checkout (stacks with coupons; capped at the post-coupon total).
+- Schema: `User.loyaltyPoints`, `Order.pointsEarned` / `pointsRedeemed` (the order fields double as audit + idempotency guard)
+- Math: `lib/loyalty.js` (pure, shared client+server: `pointsEarnedFor`, `pointsRedemption`, `pointsValue`); rates in `lib/config.js`
+- Award: `lib/loyalty-server.js` → `awardOrderPoints(orderId)` (idempotent, best-effort) called from `/api/orders/verify`, the Razorpay webhook `handleCaptured`, and admin PATCH on transition → `delivered` (covers COD). `revokeOrderPoints` runs on admin transition → `cancelled`/`refunded`
+- Redeem: client sends `redeemPoints` + `pointsDiscount`; `/api/orders` POST recomputes from the real balance, debits with a guarded `updateMany` (409 on stale balance) inside the order transaction
+- UI: `components/checkout/PointsField.jsx` toggle on both payment surfaces (balance via `GET /api/me`); SettingsDrawer shows balance; OrdersDrawer shows earned/used per order
+
 ## Config (`lib/config.js`)
-`DELIVERY_FEE = 40` · `FREE_DELIVERY_THRESHOLD = 499` · `RAZORPAY_CURRENCY = 'INR'` · `RAZORPAY_THEME_COLOR` · `CATEGORY_EMOJIS`
+`DELIVERY_FEE = 40` · `FREE_DELIVERY_THRESHOLD = 499` · `POINTS_PER_100 = 10` · `POINTS_PER_RUPEE = 10` · `RAZORPAY_CURRENCY = 'INR'` · `RAZORPAY_THEME_COLOR` · `CATEGORY_EMOJIS`
 
 ## API Helpers (`lib/api-error.js`)
 `apiResponse(data, status?)` · `apiError(message, status?)` · `ApiError`
@@ -153,10 +160,9 @@ RAZORPAY_KEY_SECRET=
 ```
 
 ## Database Models
-User · Category · Product · ProductVariant · Order · OrderItem · Payment · CartItem · Wishlist · DeliveryAgent · Coupon · DeliveryArea · Setting
+User · Category · Product · ProductVariant · Order · OrderItem · Payment · CartItem · DeliveryAgent · Coupon · DeliveryArea · Setting
 
 ## Still To Build
-- `/wishlist` — Wishlist page (store exists, route is middleware-protected)
 - Remaining admin pages — coupons, delivery agents, areas (admin has dashboard, products, orders, categories, inventory, payments, promotions, revenue, settings, users)
 
 ## Notes
