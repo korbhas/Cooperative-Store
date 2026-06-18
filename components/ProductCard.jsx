@@ -80,7 +80,7 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Info */}
-      <CardContent className="flex flex-1 flex-col gap-1 px-3 pt-3 pb-0">
+      <CardContent className="flex flex-1 flex-col gap-0.5 px-2 pt-2 pb-0">
         {product.category && (
           <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
             {product.category.name}
@@ -102,10 +102,10 @@ export default function ProductCard({ product }) {
         </div>
       </CardContent>
 
-      <Separator className="mt-3" />
+      <Separator className="mt-2" />
 
       {/* Action */}
-      <div className="p-3">
+      <div className="p-2">
         {qty === 0 ? (
           <Button
             size="sm"
