@@ -54,7 +54,7 @@ export default function ProductCard({ product }) {
       <div className="relative">
         <Link href={`/products/${product.id}`} className="block">
           <div
-            className="relative aspect-square overflow-hidden rounded-t-[var(--radius)]"
+            className="relative aspect-[4/3] overflow-hidden rounded-t-[var(--radius)]"
             style={{ background: product.imageUrl ? 'var(--muted)' : `var(--product-tint, ${bgColor})` }}
           >
             {product.imageUrl ? (
@@ -71,6 +71,13 @@ export default function ProductCard({ product }) {
           </div>
         </Link>
 
+        {/* Category */}
+        {product.category && (
+          <span className="absolute top-2 left-2 font-mono text-[9px] tracking-wide uppercase bg-background/80 text-muted-foreground rounded px-1.5 py-0.5 backdrop-blur-sm">
+            {product.category.name}
+          </span>
+        )}
+
         {/* Out of stock */}
         {outOfStock && (
           <Badge className="absolute bottom-2 left-2 border-transparent bg-foreground/70 text-background">
@@ -80,12 +87,7 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Info */}
-      <CardContent className="flex flex-1 flex-col gap-0.5 px-2 pt-2 pb-0">
-        {product.category && (
-          <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
-            {product.category.name}
-          </span>
-        )}
+      <CardContent className="flex flex-1 flex-col gap-0.5 px-2 pt-1.5 pb-0">
 
         <Link
           href={`/products/${product.id}`}
@@ -102,7 +104,7 @@ export default function ProductCard({ product }) {
         </div>
       </CardContent>
 
-      <Separator className="mt-2" />
+      <Separator className="mt-1.5" />
 
       {/* Action */}
       <div className="p-2">

@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { IconLogout, IconUser, IconMoon } from '@tabler/icons-react'
+import { IconLogout, IconUser, IconMoon, IconCoin } from '@tabler/icons-react'
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useTheme } from 'next-themes'
 import AddressForm from '@/components/checkout/AddressForm'
+import { pointsValue } from '@/lib/loyalty'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -27,8 +28,20 @@ export default function SettingsDrawer({ open, onOpenChange }) {
   const { signOut, openUserProfile } = useClerk()
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [points, setPoints] = useState(null)
 
   useEffect(() => { setMounted(true) }, [])
+
+  // Refresh the loyalty balance each time the drawer opens
+  useEffect(() => {
+    if (!open) return
+    let active = true
+    fetch('/api/me')
+      .then((r) => r.json())
+      .then((d) => { if (active) setPoints(Number(d?.loyaltyPoints) || 0) })
+      .catch(() => {})
+    return () => { active = false }
+  }, [open])
 
   const displayName = user?.fullName || user?.firstName || 'User'
   const email = user?.primaryEmailAddress?.emailAddress ?? ''
@@ -65,6 +78,12 @@ export default function SettingsDrawer({ open, onOpenChange }) {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{displayName}</p>
               <p className="truncate text-xs text-muted-foreground">{email}</p>
+              {points != null && (
+                <p className="mt-0.5 flex items-center gap-1 text-xs text-secondary-foreground">
+                  <IconCoin className="size-3.5" />
+                  {points} points{points > 0 ? ` · worth ₹${pointsValue(points)}` : ''}
+                </p>
+              )}
             </div>
             <Button variant="outline" size="sm" onClick={handleManageAccount}>
               Manage

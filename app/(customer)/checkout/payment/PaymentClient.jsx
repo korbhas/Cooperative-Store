@@ -9,6 +9,8 @@ import { useCheckoutStore } from '@/store/checkout'
 import { usePlaceOrder } from '@/hooks/use-place-order'
 import CartEmptyState from '../CartEmptyState'
 import CouponField from '@/components/checkout/CouponField'
+import PointsField from '@/components/checkout/PointsField'
+import { pointsRedemption } from '@/lib/loyalty'
 import PageLoader from '@/components/PageLoader'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,6 +27,8 @@ export default function PaymentClient({ deliveryFee: deliveryFeeConfig, freeDeli
 
   const address = useCheckoutStore((s) => s.address)
   const coupon = useCheckoutStore((s) => s.coupon)
+  const redeemPoints = useCheckoutStore((s) => s.redeemPoints)
+  const [pointsBalance, setPointsBalance] = useState(null)
 
   const { placeOrder, submitting } = usePlaceOrder()
 
@@ -58,7 +62,10 @@ export default function PaymentClient({ deliveryFee: deliveryFeeConfig, freeDeli
       : coupon.discountValue
     discount = Math.min(discount, subtotal)
   }
-  const total = subtotal + deliveryFee - discount
+  const prePointsTotal = subtotal + deliveryFee - discount
+  const pointsRupees =
+    redeemPoints && pointsBalance ? pointsRedemption(pointsBalance, prePointsTotal).rupees : 0
+  const total = prePointsTotal - pointsRupees
 
   return (
     <div className="flex flex-col gap-5 md:flex-row">
@@ -91,6 +98,12 @@ export default function PaymentClient({ deliveryFee: deliveryFeeConfig, freeDeli
             </FieldSeparator>
 
             <CouponField subtotal={subtotal} />
+
+            <PointsField
+              maxRupees={prePointsTotal}
+              balance={pointsBalance}
+              onBalance={setPointsBalance}
+            />
           </div>
         </CardContent>
       </Card>
@@ -138,6 +151,9 @@ export default function PaymentClient({ deliveryFee: deliveryFeeConfig, freeDeli
             {discount > 0 && (
               <Row label={`Coupon (${coupon.code})`} value={`−₹${discount.toFixed(2)}`} green />
             )}
+            {pointsRupees > 0 && (
+              <Row label="Points" value={`−₹${pointsRupees.toFixed(2)}`} green />
+            )}
             <div style={{ height: 1, background: 'var(--color-fm-line-soft)' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 700, color: 'var(--color-fm-ink)' }}>Total</span>
@@ -152,7 +168,7 @@ export default function PaymentClient({ deliveryFee: deliveryFeeConfig, freeDeli
             size="lg"
             className="mt-5 w-full"
             disabled={submitting}
-            onClick={() => placeOrder({ items, address, coupon, discount, total })}
+            onClick={() => placeOrder({ items, address, coupon, discount, total, redeemPoints, pointsDiscount: pointsRupees })}
           >
             {submitting ? 'Processing…' : <>Pay ₹{total.toFixed(2)} <IconChevronRight className="size-4" /></>}
           </Button>

@@ -6,6 +6,7 @@ import { logger } from '@/lib/logger'
 import { RAZORPAY_CURRENCY } from '@/lib/config'
 import { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from '@/lib/env'
 import { checkCouponRules, computeDiscount } from '@/lib/coupon'
+import { pointsRedemption } from '@/lib/loyalty'
 import { notifyAdminOrderConfirmed } from '@/lib/whatsapp'
 
 export async function POST(request) {
@@ -18,7 +19,7 @@ export async function POST(request) {
     if (!email) throw new ApiError('No email on account', 400)
 
     const body = await request.json()
-    const { deliveryAddress, phone, items, totalAmount, couponId } = body
+    const { deliveryAddress, phone, items, totalAmount, couponId, redeemPoints, pointsDiscount } = body
 
     if (!deliveryAddress || !items?.length) {
       throw new ApiError('Missing required fields', 400)
@@ -70,17 +71,40 @@ export async function POST(request) {
         phone: phone ?? null,
         role: 'customer',
       },
-      select: { id: true },
+      select: { id: true, loyaltyPoints: true },
     })
+
+    // Re-validate points redemption server-side — client preview can go stale.
+    // Client sends totalAmount net of its points discount; reconstruct the
+    // pre-points total and recompute from the actual balance.
+    let pointsRedeemed = 0
+    let finalTotal = Number(totalAmount)
+    if (redeemPoints) {
+      const preTotal = Number(totalAmount) + Number(pointsDiscount ?? 0)
+      const { rupees, points } = pointsRedemption(dbUser.loyaltyPoints, preTotal)
+      pointsRedeemed = points
+      finalTotal = preTotal - rupees
+    }
 
     // Create DB order + items in a transaction
     const order = await prisma.$transaction(async (tx) => {
+      if (pointsRedeemed > 0) {
+        const debit = await tx.user.updateMany({
+          where: { id: dbUser.id, loyaltyPoints: { gte: pointsRedeemed } },
+          data: { loyaltyPoints: { decrement: pointsRedeemed } },
+        })
+        if (debit.count === 0) {
+          throw new ApiError('Your points balance changed — please review and try again', 409)
+        }
+      }
+
       const newOrder = await tx.order.create({
         data: {
           userId: dbUser.id,
           deliveryAddress,
-          totalAmount,
+          totalAmount: finalTotal,
           discountAmount,
+          pointsRedeemed,
           couponId: couponId ?? null,
           status: 'pending',
           items: {
@@ -114,7 +138,7 @@ export async function POST(request) {
         key_secret: RAZORPAY_KEY_SECRET,
       })
       const rzpOrder = await razorpay.orders.create({
-        amount: Math.round(Number(totalAmount) * 100),
+        amount: Math.round(finalTotal * 100),
         currency: RAZORPAY_CURRENCY,
         receipt: `order_${order.id}`,
       })
@@ -129,15 +153,16 @@ export async function POST(request) {
     logger.info('order_created', {
       orderId: order.id,
       userId: dbUser.id,
-      totalAmount: Number(totalAmount),
+      totalAmount: finalTotal,
       itemCount: items.length,
       couponId: couponId ?? null,
+      pointsRedeemed,
       razorpayOrderId,
     })
 
     // For COD (no Razorpay), notify admin immediately — paid orders are handled by the webhook
     if (!razorpayOrderId) {
-      notifyAdminOrderConfirmed(order.id, customerName, phone, totalAmount, deliveryAddress).catch(() => {})
+      notifyAdminOrderConfirmed(order.id, customerName, phone, finalTotal, deliveryAddress).catch(() => {})
     }
 
     return apiResponse({ orderId: order.id, razorpayOrderId })
@@ -180,6 +205,8 @@ export async function GET() {
         status: o.status,
         totalAmount: o.totalAmount.toNumber(),
         discountAmount: o.discountAmount.toNumber(),
+        pointsEarned: o.pointsEarned,
+        pointsRedeemed: o.pointsRedeemed,
         createdAt: o.createdAt.toISOString(),
         deliveryAddress: o.deliveryAddress,
         customerName: o.user?.name ?? o.guestName ?? null,

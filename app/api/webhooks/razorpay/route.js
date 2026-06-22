@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import * as Sentry from '@sentry/nextjs'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import { awardOrderPoints } from '@/lib/loyalty-server'
 import { notifyAdminOrderConfirmed } from '@/lib/whatsapp'
 
 const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET
@@ -88,6 +89,8 @@ async function handleCaptured(razorpayOrderId, razorpayPaymentId, amountPaise) {
     razorpayPaymentId,
     amountRupees: amountPaise / 100,
   })
+
+  await awardOrderPoints(order.id)
 
   notifyAdminOrderConfirmed(
     order.id,

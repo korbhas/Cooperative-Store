@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { apiResponse, apiError, ApiError } from '@/lib/api-error'
 import { RAZORPAY_KEY_SECRET } from '@/lib/env'
+import { awardOrderPoints } from '@/lib/loyalty-server'
 import { notifyAdminOrderConfirmed } from '@/lib/whatsapp'
 
 export async function POST(request) {
@@ -49,6 +50,8 @@ export async function POST(request) {
         },
       }),
     ])
+
+    await awardOrderPoints(orderId)
 
     notifyAdminOrderConfirmed(
       orderId,

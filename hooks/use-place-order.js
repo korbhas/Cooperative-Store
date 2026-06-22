@@ -32,7 +32,7 @@ export function usePlaceOrder({ onExit } = {}) {
     useCheckoutStore.getState().clear()
   }
 
-  async function placeOrder({ items, address, coupon, discount, total }) {
+  async function placeOrder({ items, address, coupon, discount, total, redeemPoints = false, pointsDiscount = 0 }) {
     const { name, phone, address: deliveryAddress } = address
     setSubmitting(true)
 
@@ -46,6 +46,8 @@ export function usePlaceOrder({ onExit } = {}) {
           couponId: coupon?.id ?? null,
           discountAmount: discount,
           totalAmount: total,
+          redeemPoints,
+          pointsDiscount,
           items: items.map((i) => ({
             productId: i.productId,
             variantId: i.variantId ?? null,

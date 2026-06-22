@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN "loyaltyPoints" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "orders" ADD COLUMN "pointsEarned" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN "pointsRedeemed" INTEGER NOT NULL DEFAULT 0;

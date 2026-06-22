@@ -2291,10 +2291,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateOutputType = {
     id: number | null
+    loyaltyPoints: number | null
   }
 
   export type UserSumAggregateOutputType = {
     id: number | null
+    loyaltyPoints: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -2306,6 +2308,7 @@ export namespace Prisma {
     passwordHash: string | null
     emailVerified: boolean | null
     isBanned: boolean | null
+    loyaltyPoints: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2319,6 +2322,7 @@ export namespace Prisma {
     passwordHash: string | null
     emailVerified: boolean | null
     isBanned: boolean | null
+    loyaltyPoints: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2332,6 +2336,7 @@ export namespace Prisma {
     passwordHash: number
     emailVerified: number
     isBanned: number
+    loyaltyPoints: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2340,10 +2345,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateInputType = {
     id?: true
+    loyaltyPoints?: true
   }
 
   export type UserSumAggregateInputType = {
     id?: true
+    loyaltyPoints?: true
   }
 
   export type UserMinAggregateInputType = {
@@ -2355,6 +2362,7 @@ export namespace Prisma {
     passwordHash?: true
     emailVerified?: true
     isBanned?: true
+    loyaltyPoints?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2368,6 +2376,7 @@ export namespace Prisma {
     passwordHash?: true
     emailVerified?: true
     isBanned?: true
+    loyaltyPoints?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2381,6 +2390,7 @@ export namespace Prisma {
     passwordHash?: true
     emailVerified?: true
     isBanned?: true
+    loyaltyPoints?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2481,6 +2491,7 @@ export namespace Prisma {
     passwordHash: string | null
     emailVerified: boolean
     isBanned: boolean
+    loyaltyPoints: number
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2513,6 +2524,7 @@ export namespace Prisma {
     passwordHash?: boolean
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     orders?: boolean | User$ordersArgs<ExtArgs>
@@ -2530,6 +2542,7 @@ export namespace Prisma {
     passwordHash?: boolean
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2543,6 +2556,7 @@ export namespace Prisma {
     passwordHash?: boolean
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2556,11 +2570,12 @@ export namespace Prisma {
     passwordHash?: boolean
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone" | "role" | "passwordHash" | "emailVerified" | "isBanned" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone" | "role" | "passwordHash" | "emailVerified" | "isBanned" | "loyaltyPoints" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | User$ordersArgs<ExtArgs>
     cartItems?: boolean | User$cartItemsArgs<ExtArgs>
@@ -2586,6 +2601,7 @@ export namespace Prisma {
       passwordHash: string | null
       emailVerified: boolean
       isBanned: boolean
+      loyaltyPoints: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -3022,6 +3038,7 @@ export namespace Prisma {
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly emailVerified: FieldRef<"User", 'Boolean'>
     readonly isBanned: FieldRef<"User", 'Boolean'>
+    readonly loyaltyPoints: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -4661,6 +4678,7 @@ export namespace Prisma {
 
   export type ProductMinAggregateOutputType = {
     id: number | null
+    sku: string | null
     name: string | null
     description: string | null
     price: Decimal | null
@@ -4675,6 +4693,7 @@ export namespace Prisma {
 
   export type ProductMaxAggregateOutputType = {
     id: number | null
+    sku: string | null
     name: string | null
     description: string | null
     price: Decimal | null
@@ -4689,6 +4708,7 @@ export namespace Prisma {
 
   export type ProductCountAggregateOutputType = {
     id: number
+    sku: number
     name: number
     description: number
     price: number
@@ -4719,6 +4739,7 @@ export namespace Prisma {
 
   export type ProductMinAggregateInputType = {
     id?: true
+    sku?: true
     name?: true
     description?: true
     price?: true
@@ -4733,6 +4754,7 @@ export namespace Prisma {
 
   export type ProductMaxAggregateInputType = {
     id?: true
+    sku?: true
     name?: true
     description?: true
     price?: true
@@ -4747,6 +4769,7 @@ export namespace Prisma {
 
   export type ProductCountAggregateInputType = {
     id?: true
+    sku?: true
     name?: true
     description?: true
     price?: true
@@ -4848,6 +4871,7 @@ export namespace Prisma {
 
   export type ProductGroupByOutputType = {
     id: number
+    sku: string | null
     name: string
     description: string | null
     price: Decimal
@@ -4881,6 +4905,7 @@ export namespace Prisma {
 
   export type ProductSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    sku?: boolean
     name?: boolean
     description?: boolean
     price?: boolean
@@ -4901,6 +4926,7 @@ export namespace Prisma {
 
   export type ProductSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    sku?: boolean
     name?: boolean
     description?: boolean
     price?: boolean
@@ -4916,6 +4942,7 @@ export namespace Prisma {
 
   export type ProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    sku?: boolean
     name?: boolean
     description?: boolean
     price?: boolean
@@ -4931,6 +4958,7 @@ export namespace Prisma {
 
   export type ProductSelectScalar = {
     id?: boolean
+    sku?: boolean
     name?: boolean
     description?: boolean
     price?: boolean
@@ -4943,7 +4971,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "price" | "unit" | "stockQty" | "imageUrl" | "isActive" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sku" | "name" | "description" | "price" | "unit" | "stockQty" | "imageUrl" | "isActive" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | Product$categoryArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
@@ -4970,6 +4998,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      sku: string | null
       name: string
       description: string | null
       price: Prisma.Decimal
@@ -5409,6 +5438,7 @@ export namespace Prisma {
    */
   interface ProductFieldRefs {
     readonly id: FieldRef<"Product", 'Int'>
+    readonly sku: FieldRef<"Product", 'String'>
     readonly name: FieldRef<"Product", 'String'>
     readonly description: FieldRef<"Product", 'String'>
     readonly price: FieldRef<"Product", 'Decimal'>
@@ -7165,6 +7195,8 @@ export namespace Prisma {
     userId: number | null
     totalAmount: Decimal | null
     discountAmount: Decimal | null
+    pointsEarned: number | null
+    pointsRedeemed: number | null
     couponId: number | null
     deliveryAgentId: number | null
   }
@@ -7174,6 +7206,8 @@ export namespace Prisma {
     userId: number | null
     totalAmount: Decimal | null
     discountAmount: Decimal | null
+    pointsEarned: number | null
+    pointsRedeemed: number | null
     couponId: number | null
     deliveryAgentId: number | null
   }
@@ -7191,6 +7225,8 @@ export namespace Prisma {
     guestEmail: string | null
     guestPhone: string | null
     discountAmount: Decimal | null
+    pointsEarned: number | null
+    pointsRedeemed: number | null
     couponId: number | null
     deliveryAgentId: number | null
     createdAt: Date | null
@@ -7210,6 +7246,8 @@ export namespace Prisma {
     guestEmail: string | null
     guestPhone: string | null
     discountAmount: Decimal | null
+    pointsEarned: number | null
+    pointsRedeemed: number | null
     couponId: number | null
     deliveryAgentId: number | null
     createdAt: Date | null
@@ -7229,6 +7267,8 @@ export namespace Prisma {
     guestEmail: number
     guestPhone: number
     discountAmount: number
+    pointsEarned: number
+    pointsRedeemed: number
     couponId: number
     deliveryAgentId: number
     createdAt: number
@@ -7242,6 +7282,8 @@ export namespace Prisma {
     userId?: true
     totalAmount?: true
     discountAmount?: true
+    pointsEarned?: true
+    pointsRedeemed?: true
     couponId?: true
     deliveryAgentId?: true
   }
@@ -7251,6 +7293,8 @@ export namespace Prisma {
     userId?: true
     totalAmount?: true
     discountAmount?: true
+    pointsEarned?: true
+    pointsRedeemed?: true
     couponId?: true
     deliveryAgentId?: true
   }
@@ -7268,6 +7312,8 @@ export namespace Prisma {
     guestEmail?: true
     guestPhone?: true
     discountAmount?: true
+    pointsEarned?: true
+    pointsRedeemed?: true
     couponId?: true
     deliveryAgentId?: true
     createdAt?: true
@@ -7287,6 +7333,8 @@ export namespace Prisma {
     guestEmail?: true
     guestPhone?: true
     discountAmount?: true
+    pointsEarned?: true
+    pointsRedeemed?: true
     couponId?: true
     deliveryAgentId?: true
     createdAt?: true
@@ -7306,6 +7354,8 @@ export namespace Prisma {
     guestEmail?: true
     guestPhone?: true
     discountAmount?: true
+    pointsEarned?: true
+    pointsRedeemed?: true
     couponId?: true
     deliveryAgentId?: true
     createdAt?: true
@@ -7412,6 +7462,8 @@ export namespace Prisma {
     guestEmail: string | null
     guestPhone: string | null
     discountAmount: Decimal
+    pointsEarned: number
+    pointsRedeemed: number
     couponId: number | null
     deliveryAgentId: number | null
     createdAt: Date
@@ -7450,6 +7502,8 @@ export namespace Prisma {
     guestEmail?: boolean
     guestPhone?: boolean
     discountAmount?: boolean
+    pointsEarned?: boolean
+    pointsRedeemed?: boolean
     couponId?: boolean
     deliveryAgentId?: boolean
     createdAt?: boolean
@@ -7475,6 +7529,8 @@ export namespace Prisma {
     guestEmail?: boolean
     guestPhone?: boolean
     discountAmount?: boolean
+    pointsEarned?: boolean
+    pointsRedeemed?: boolean
     couponId?: boolean
     deliveryAgentId?: boolean
     createdAt?: boolean
@@ -7497,6 +7553,8 @@ export namespace Prisma {
     guestEmail?: boolean
     guestPhone?: boolean
     discountAmount?: boolean
+    pointsEarned?: boolean
+    pointsRedeemed?: boolean
     couponId?: boolean
     deliveryAgentId?: boolean
     createdAt?: boolean
@@ -7519,13 +7577,15 @@ export namespace Prisma {
     guestEmail?: boolean
     guestPhone?: boolean
     discountAmount?: boolean
+    pointsEarned?: boolean
+    pointsRedeemed?: boolean
     couponId?: boolean
     deliveryAgentId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "status" | "totalAmount" | "deliveryAddress" | "razorpayOrderId" | "accessToken" | "estimatedDelivery" | "guestName" | "guestEmail" | "guestPhone" | "discountAmount" | "couponId" | "deliveryAgentId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "status" | "totalAmount" | "deliveryAddress" | "razorpayOrderId" | "accessToken" | "estimatedDelivery" | "guestName" | "guestEmail" | "guestPhone" | "discountAmount" | "pointsEarned" | "pointsRedeemed" | "couponId" | "deliveryAgentId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Order$userArgs<ExtArgs>
     coupon?: boolean | Order$couponArgs<ExtArgs>
@@ -7567,6 +7627,8 @@ export namespace Prisma {
       guestEmail: string | null
       guestPhone: string | null
       discountAmount: Prisma.Decimal
+      pointsEarned: number
+      pointsRedeemed: number
       couponId: number | null
       deliveryAgentId: number | null
       createdAt: Date
@@ -8011,6 +8073,8 @@ export namespace Prisma {
     readonly guestEmail: FieldRef<"Order", 'String'>
     readonly guestPhone: FieldRef<"Order", 'String'>
     readonly discountAmount: FieldRef<"Order", 'Decimal'>
+    readonly pointsEarned: FieldRef<"Order", 'Int'>
+    readonly pointsRedeemed: FieldRef<"Order", 'Int'>
     readonly couponId: FieldRef<"Order", 'Int'>
     readonly deliveryAgentId: FieldRef<"Order", 'Int'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
@@ -17513,6 +17577,7 @@ export namespace Prisma {
     passwordHash: 'passwordHash',
     emailVerified: 'emailVerified',
     isBanned: 'isBanned',
+    loyaltyPoints: 'loyaltyPoints',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -17534,6 +17599,7 @@ export namespace Prisma {
 
   export const ProductScalarFieldEnum: {
     id: 'id',
+    sku: 'sku',
     name: 'name',
     description: 'description',
     price: 'price',
@@ -17577,6 +17643,8 @@ export namespace Prisma {
     guestEmail: 'guestEmail',
     guestPhone: 'guestPhone',
     discountAmount: 'discountAmount',
+    pointsEarned: 'pointsEarned',
+    pointsRedeemed: 'pointsRedeemed',
     couponId: 'couponId',
     deliveryAgentId: 'deliveryAgentId',
     createdAt: 'createdAt',
@@ -17865,6 +17933,7 @@ export namespace Prisma {
     passwordHash?: StringNullableFilter<"User"> | string | null
     emailVerified?: BoolFilter<"User"> | boolean
     isBanned?: BoolFilter<"User"> | boolean
+    loyaltyPoints?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     orders?: OrderListRelationFilter
@@ -17881,6 +17950,7 @@ export namespace Prisma {
     passwordHash?: SortOrderInput | SortOrder
     emailVerified?: SortOrder
     isBanned?: SortOrder
+    loyaltyPoints?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     orders?: OrderOrderByRelationAggregateInput
@@ -17900,6 +17970,7 @@ export namespace Prisma {
     passwordHash?: StringNullableFilter<"User"> | string | null
     emailVerified?: BoolFilter<"User"> | boolean
     isBanned?: BoolFilter<"User"> | boolean
+    loyaltyPoints?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     orders?: OrderListRelationFilter
@@ -17916,6 +17987,7 @@ export namespace Prisma {
     passwordHash?: SortOrderInput | SortOrder
     emailVerified?: SortOrder
     isBanned?: SortOrder
+    loyaltyPoints?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -17937,6 +18009,7 @@ export namespace Prisma {
     passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
     isBanned?: BoolWithAggregatesFilter<"User"> | boolean
+    loyaltyPoints?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -18008,6 +18081,7 @@ export namespace Prisma {
     OR?: ProductWhereInput[]
     NOT?: ProductWhereInput | ProductWhereInput[]
     id?: IntFilter<"Product"> | number
+    sku?: StringNullableFilter<"Product"> | string | null
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
     price?: DecimalFilter<"Product"> | Decimal | DecimalJsLike | number | string
@@ -18027,6 +18101,7 @@ export namespace Prisma {
 
   export type ProductOrderByWithRelationInput = {
     id?: SortOrder
+    sku?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     price?: SortOrder
@@ -18046,6 +18121,7 @@ export namespace Prisma {
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    sku?: string
     AND?: ProductWhereInput | ProductWhereInput[]
     OR?: ProductWhereInput[]
     NOT?: ProductWhereInput | ProductWhereInput[]
@@ -18064,10 +18140,11 @@ export namespace Prisma {
     orderItems?: OrderItemListRelationFilter
     cartItems?: CartItemListRelationFilter
     wishlists?: WishlistListRelationFilter
-  }, "id">
+  }, "id" | "sku">
 
   export type ProductOrderByWithAggregationInput = {
     id?: SortOrder
+    sku?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     price?: SortOrder
@@ -18090,6 +18167,7 @@ export namespace Prisma {
     OR?: ProductScalarWhereWithAggregatesInput[]
     NOT?: ProductScalarWhereWithAggregatesInput | ProductScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Product"> | number
+    sku?: StringNullableWithAggregatesFilter<"Product"> | string | null
     name?: StringWithAggregatesFilter<"Product"> | string
     description?: StringNullableWithAggregatesFilter<"Product"> | string | null
     price?: DecimalWithAggregatesFilter<"Product"> | Decimal | DecimalJsLike | number | string
@@ -18198,6 +18276,8 @@ export namespace Prisma {
     guestEmail?: StringNullableFilter<"Order"> | string | null
     guestPhone?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFilter<"Order"> | number
+    pointsRedeemed?: IntFilter<"Order"> | number
     couponId?: IntNullableFilter<"Order"> | number | null
     deliveryAgentId?: IntNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -18222,6 +18302,8 @@ export namespace Prisma {
     guestEmail?: SortOrderInput | SortOrder
     guestPhone?: SortOrderInput | SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrderInput | SortOrder
     deliveryAgentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -18249,6 +18331,8 @@ export namespace Prisma {
     guestEmail?: StringNullableFilter<"Order"> | string | null
     guestPhone?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFilter<"Order"> | number
+    pointsRedeemed?: IntFilter<"Order"> | number
     couponId?: IntNullableFilter<"Order"> | number | null
     deliveryAgentId?: IntNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -18273,6 +18357,8 @@ export namespace Prisma {
     guestEmail?: SortOrderInput | SortOrder
     guestPhone?: SortOrderInput | SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrderInput | SortOrder
     deliveryAgentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -18300,6 +18386,8 @@ export namespace Prisma {
     guestEmail?: StringNullableWithAggregatesFilter<"Order"> | string | null
     guestPhone?: StringNullableWithAggregatesFilter<"Order"> | string | null
     discountAmount?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntWithAggregatesFilter<"Order"> | number
+    pointsRedeemed?: IntWithAggregatesFilter<"Order"> | number
     couponId?: IntNullableWithAggregatesFilter<"Order"> | number | null
     deliveryAgentId?: IntNullableWithAggregatesFilter<"Order"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -18846,6 +18934,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -18862,6 +18951,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -18877,6 +18967,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -18893,6 +18984,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -18909,6 +19001,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18921,6 +19014,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18934,6 +19028,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19003,6 +19098,7 @@ export namespace Prisma {
   }
 
   export type ProductCreateInput = {
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -19021,6 +19117,7 @@ export namespace Prisma {
 
   export type ProductUncheckedCreateInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -19038,6 +19135,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -19056,6 +19154,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -19074,6 +19173,7 @@ export namespace Prisma {
 
   export type ProductCreateManyInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -19087,6 +19187,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateManyMutationInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -19100,6 +19201,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -19207,6 +19309,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
@@ -19229,6 +19333,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     deliveryAgentId?: number | null
     createdAt?: Date | string
@@ -19248,6 +19354,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
@@ -19270,6 +19378,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19291,6 +19401,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     deliveryAgentId?: number | null
     createdAt?: Date | string
@@ -19308,6 +19420,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19325,6 +19439,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19964,12 +20080,14 @@ export namespace Prisma {
     passwordHash?: SortOrder
     emailVerified?: SortOrder
     isBanned?: SortOrder
+    loyaltyPoints?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
     id?: SortOrder
+    loyaltyPoints?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -19981,6 +20099,7 @@ export namespace Prisma {
     passwordHash?: SortOrder
     emailVerified?: SortOrder
     isBanned?: SortOrder
+    loyaltyPoints?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19994,12 +20113,14 @@ export namespace Prisma {
     passwordHash?: SortOrder
     emailVerified?: SortOrder
     isBanned?: SortOrder
+    loyaltyPoints?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
     id?: SortOrder
+    loyaltyPoints?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -20182,6 +20303,7 @@ export namespace Prisma {
 
   export type ProductCountOrderByAggregateInput = {
     id?: SortOrder
+    sku?: SortOrder
     name?: SortOrder
     description?: SortOrder
     price?: SortOrder
@@ -20203,6 +20325,7 @@ export namespace Prisma {
 
   export type ProductMaxOrderByAggregateInput = {
     id?: SortOrder
+    sku?: SortOrder
     name?: SortOrder
     description?: SortOrder
     price?: SortOrder
@@ -20217,6 +20340,7 @@ export namespace Prisma {
 
   export type ProductMinOrderByAggregateInput = {
     id?: SortOrder
+    sku?: SortOrder
     name?: SortOrder
     description?: SortOrder
     price?: SortOrder
@@ -20376,6 +20500,8 @@ export namespace Prisma {
     guestEmail?: SortOrder
     guestPhone?: SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrder
     deliveryAgentId?: SortOrder
     createdAt?: SortOrder
@@ -20387,6 +20513,8 @@ export namespace Prisma {
     userId?: SortOrder
     totalAmount?: SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrder
     deliveryAgentId?: SortOrder
   }
@@ -20404,6 +20532,8 @@ export namespace Prisma {
     guestEmail?: SortOrder
     guestPhone?: SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrder
     deliveryAgentId?: SortOrder
     createdAt?: SortOrder
@@ -20423,6 +20553,8 @@ export namespace Prisma {
     guestEmail?: SortOrder
     guestPhone?: SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrder
     deliveryAgentId?: SortOrder
     createdAt?: SortOrder
@@ -20434,6 +20566,8 @@ export namespace Prisma {
     userId?: SortOrder
     totalAmount?: SortOrder
     discountAmount?: SortOrder
+    pointsEarned?: SortOrder
+    pointsRedeemed?: SortOrder
     couponId?: SortOrder
     deliveryAgentId?: SortOrder
   }
@@ -20906,6 +21040,14 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -20950,14 +21092,6 @@ export namespace Prisma {
     update?: WishlistUpdateWithWhereUniqueWithoutUserInput | WishlistUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: WishlistUpdateManyWithWhereWithoutUserInput | WishlistUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WishlistScalarWhereInput | WishlistScalarWhereInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type OrderUncheckedUpdateManyWithoutUserNestedInput = {
@@ -21945,6 +22079,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     coupon?: CouponCreateNestedOneWithoutOrdersInput
@@ -21965,6 +22101,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     deliveryAgentId?: number | null
     createdAt?: Date | string
@@ -22061,6 +22199,8 @@ export namespace Prisma {
     guestEmail?: StringNullableFilter<"Order"> | string | null
     guestPhone?: StringNullableFilter<"Order"> | string | null
     discountAmount?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFilter<"Order"> | number
+    pointsRedeemed?: IntFilter<"Order"> | number
     couponId?: IntNullableFilter<"Order"> | number | null
     deliveryAgentId?: IntNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -22122,6 +22262,7 @@ export namespace Prisma {
   }
 
   export type ProductCreateWithoutCategoryInput = {
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -22139,6 +22280,7 @@ export namespace Prisma {
 
   export type ProductUncheckedCreateWithoutCategoryInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -22185,6 +22327,7 @@ export namespace Prisma {
     OR?: ProductScalarWhereInput[]
     NOT?: ProductScalarWhereInput | ProductScalarWhereInput[]
     id?: IntFilter<"Product"> | number
+    sku?: StringNullableFilter<"Product"> | string | null
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
     price?: DecimalFilter<"Product"> | Decimal | DecimalJsLike | number | string
@@ -22446,6 +22589,7 @@ export namespace Prisma {
   }
 
   export type ProductCreateWithoutVariantsInput = {
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -22463,6 +22607,7 @@ export namespace Prisma {
 
   export type ProductUncheckedCreateWithoutVariantsInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -22522,6 +22667,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateWithoutVariantsInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -22539,6 +22685,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateWithoutVariantsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -22578,6 +22725,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     cartItems?: CartItemCreateNestedManyWithoutUserInput
@@ -22593,6 +22741,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     cartItems?: CartItemUncheckedCreateNestedManyWithoutUserInput
@@ -22734,6 +22883,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cartItems?: CartItemUpdateManyWithoutUserNestedInput
@@ -22749,6 +22899,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cartItems?: CartItemUncheckedUpdateManyWithoutUserNestedInput
@@ -22884,6 +23035,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
@@ -22905,6 +23058,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     deliveryAgentId?: number | null
     createdAt?: Date | string
@@ -22918,6 +23073,7 @@ export namespace Prisma {
   }
 
   export type ProductCreateWithoutOrderItemsInput = {
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -22935,6 +23091,7 @@ export namespace Prisma {
 
   export type ProductUncheckedCreateWithoutOrderItemsInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -23005,6 +23162,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
@@ -23026,6 +23185,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23045,6 +23206,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateWithoutOrderItemsInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23062,6 +23224,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateWithoutOrderItemsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23122,6 +23285,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
@@ -23143,6 +23308,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     deliveryAgentId?: number | null
     createdAt?: Date | string
@@ -23177,6 +23344,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
@@ -23198,6 +23367,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23213,6 +23384,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -23228,6 +23400,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -23240,6 +23413,7 @@ export namespace Prisma {
   }
 
   export type ProductCreateWithoutCartItemsInput = {
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -23257,6 +23431,7 @@ export namespace Prisma {
 
   export type ProductUncheckedCreateWithoutCartItemsInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -23296,6 +23471,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -23311,6 +23487,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -23329,6 +23506,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateWithoutCartItemsInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23346,6 +23524,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateWithoutCartItemsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23369,6 +23548,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -23384,6 +23564,7 @@ export namespace Prisma {
     passwordHash?: string | null
     emailVerified?: boolean
     isBanned?: boolean
+    loyaltyPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -23396,6 +23577,7 @@ export namespace Prisma {
   }
 
   export type ProductCreateWithoutWishlistsInput = {
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -23413,6 +23595,7 @@ export namespace Prisma {
 
   export type ProductUncheckedCreateWithoutWishlistsInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -23452,6 +23635,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -23467,6 +23651,7 @@ export namespace Prisma {
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     isBanned?: BoolFieldUpdateOperationsInput | boolean
+    loyaltyPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -23485,6 +23670,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateWithoutWishlistsInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23502,6 +23688,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateWithoutWishlistsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23528,6 +23715,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
@@ -23549,6 +23738,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23593,6 +23784,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
@@ -23614,6 +23807,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     deliveryAgentId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23659,6 +23854,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     deliveryAgentId?: number | null
     createdAt?: Date | string
@@ -23690,6 +23887,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     coupon?: CouponUpdateOneWithoutOrdersNestedInput
@@ -23710,6 +23909,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23730,6 +23931,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23778,6 +23981,7 @@ export namespace Prisma {
 
   export type ProductCreateManyCategoryInput = {
     id?: number
+    sku?: string | null
     name: string
     description?: string | null
     price: Decimal | DecimalJsLike | number | string
@@ -23790,6 +23994,7 @@ export namespace Prisma {
   }
 
   export type ProductUpdateWithoutCategoryInput = {
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23807,6 +24012,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateWithoutCategoryInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -23824,6 +24030,7 @@ export namespace Prisma {
 
   export type ProductUncheckedUpdateManyWithoutCategoryInput = {
     id?: IntFieldUpdateOperationsInput | number
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -24052,6 +24259,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     couponId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24068,6 +24277,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
@@ -24089,6 +24300,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24109,6 +24322,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     couponId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24127,6 +24342,8 @@ export namespace Prisma {
     guestEmail?: string | null
     guestPhone?: string | null
     discountAmount?: Decimal | DecimalJsLike | number | string
+    pointsEarned?: number
+    pointsRedeemed?: number
     deliveryAgentId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24143,6 +24360,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
@@ -24164,6 +24383,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24184,6 +24405,8 @@ export namespace Prisma {
     guestEmail?: NullableStringFieldUpdateOperationsInput | string | null
     guestPhone?: NullableStringFieldUpdateOperationsInput | string | null
     discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    pointsEarned?: IntFieldUpdateOperationsInput | number
+    pointsRedeemed?: IntFieldUpdateOperationsInput | number
     deliveryAgentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

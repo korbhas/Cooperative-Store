@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-guard'
 import { apiResponse, apiError, ApiError } from '@/lib/api-error'
+import { awardOrderPoints, revokeOrderPoints } from '@/lib/loyalty-server'
 
 export async function GET(request, { params }) {
   try {
@@ -52,7 +53,23 @@ export async function PATCH(request, { params }) {
     if (status) data.status = status
     if (deliveryAgentId !== undefined) data.deliveryAgentId = deliveryAgentId ? Number(deliveryAgentId) : null
 
+    const previous = status
+      ? await prisma.order.findUnique({ where: { id: Number(id) }, select: { status: true } })
+      : null
+
     const order = await prisma.order.update({ where: { id: Number(id) }, data })
+
+    // Loyalty side effects on status transitions (idempotent helpers).
+    if (status && previous && previous.status !== status) {
+      if (status === 'delivered') {
+        await awardOrderPoints(order.id) // covers COD orders that never hit payment capture
+      } else if (status === 'cancelled' || status === 'refunded') {
+        if (previous.status !== 'cancelled' && previous.status !== 'refunded') {
+          await revokeOrderPoints(order.id)
+        }
+      }
+    }
+
     return apiResponse({ id: order.id, status: order.status })
   } catch (e) { return apiError(e) }
 }

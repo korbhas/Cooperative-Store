@@ -14,6 +14,8 @@ import { usePlaceOrder } from '@/hooks/use-place-order'
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from '@/lib/config'
 import AddressForm from '@/components/checkout/AddressForm'
 import CouponField from '@/components/checkout/CouponField'
+import PointsField from '@/components/checkout/PointsField'
+import { pointsRedemption } from '@/lib/loyalty'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -49,6 +51,8 @@ export default function CartDrawer({ children }) {
 
   const address = useCheckoutStore((s) => s.address)
   const coupon = useCheckoutStore((s) => s.coupon)
+  const redeemPoints = useCheckoutStore((s) => s.redeemPoints)
+  const [pointsBalance, setPointsBalance] = useState(null)
 
   const { placeOrder, submitting } = usePlaceOrder({ onExit: () => setOpen(false) })
 
@@ -65,7 +69,12 @@ export default function CartDrawer({ children }) {
       : coupon.discountValue
     discount = Math.min(discount, subtotal)
   }
-  const total = subtotal + delivery - (step === 'payment' ? discount : 0)
+  const prePointsTotal = subtotal + delivery - (step === 'payment' ? discount : 0)
+  const pointsRupees =
+    step === 'payment' && redeemPoints && pointsBalance
+      ? pointsRedemption(pointsBalance, prePointsTotal).rupees
+      : 0
+  const total = prePointsTotal - pointsRupees
 
   function handleOpenChange(next) {
     setOpen(next)
@@ -208,6 +217,12 @@ export default function CartDrawer({ children }) {
 
               <CouponField subtotal={subtotal} inputId="drawer-coupon-code" />
 
+              <PointsField
+                maxRupees={prePointsTotal}
+                balance={pointsBalance}
+                onBalance={setPointsBalance}
+              />
+
               {/* Items recap */}
               <div className="space-y-2 border-t pt-3">
                 {cartItems.map((item) => (
@@ -231,6 +246,7 @@ export default function CartDrawer({ children }) {
                   delivery={delivery}
                   discount={discount}
                   couponCode={coupon?.code}
+                  pointsRupees={pointsRupees}
                   total={total}
                 />
               </div>
@@ -240,7 +256,7 @@ export default function CartDrawer({ children }) {
               <Button
                 className="w-full"
                 disabled={submitting}
-                onClick={() => placeOrder({ items: cartItems, address, coupon, discount, total })}
+                onClick={() => placeOrder({ items: cartItems, address, coupon, discount, total, redeemPoints, pointsDiscount: pointsRupees })}
               >
                 {submitting ? 'Processing…' : `Pay ₹${total.toFixed(2)}`}
               </Button>
@@ -327,7 +343,7 @@ function CartLine({ item, onInc, onDec, onRemove }) {
   )
 }
 
-function SummaryRows({ subtotal, delivery, discount = 0, couponCode, total }) {
+function SummaryRows({ subtotal, delivery, discount = 0, couponCode, pointsRupees = 0, total }) {
   return (
     <>
       <div className="flex justify-between text-sm">
@@ -344,6 +360,12 @@ function SummaryRows({ subtotal, delivery, discount = 0, couponCode, total }) {
         <div className="flex justify-between text-sm" style={{ color: 'var(--color-fm-green-ink)' }}>
           <span>Coupon{couponCode ? ` (${couponCode})` : ''}</span>
           <span>−₹{discount.toFixed(2)}</span>
+        </div>
+      )}
+      {pointsRupees > 0 && (
+        <div className="flex justify-between text-sm" style={{ color: 'var(--color-fm-green-ink)' }}>
+          <span>Points</span>
+          <span>−₹{pointsRupees.toFixed(2)}</span>
         </div>
       )}
       {subtotal > 0 && subtotal < FREE_DELIVERY_THRESHOLD && (

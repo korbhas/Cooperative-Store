@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { IconPackage, IconChevronRight, IconShoppingBag } from '@tabler/icons-react'
 import AddressCard from '@/components/AddressCard'
+import { pointsValue } from '@/lib/loyalty'
 import OrderStatusTimeline from '@/components/OrderStatusTimeline'
 import PageLoader from '@/components/PageLoader'
 import { Button } from '@/components/ui/button'
@@ -123,10 +124,25 @@ export default function OrdersDrawer({ open, onOpenChange }) {
                     <span>−₹{selected.discountAmount.toFixed(2)}</span>
                   </div>
                 )}
+                {selected.pointsRedeemed > 0 && (
+                  <div className="flex justify-between text-sm" style={{ color: 'var(--color-fm-green-ink)' }}>
+                    <span>Points used</span>
+                    <span>{selected.pointsRedeemed} pts (−₹{pointsValue(selected.pointsRedeemed)})</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm font-semibold">
                   <span>Total</span>
                   <span>₹{selected.totalAmount.toFixed(2)}</span>
                 </div>
+                {selected.pointsEarned > 0 && (
+                  <div
+                    className="flex justify-between rounded-md px-2.5 py-1.5 text-xs font-medium"
+                    style={{ background: 'var(--color-fm-green-soft)', color: 'var(--color-fm-green-ink)' }}
+                  >
+                    <span>Points earned</span>
+                    <span>+{selected.pointsEarned}</span>
+                  </div>
+                )}
               </div>
 
               <AddressCard
