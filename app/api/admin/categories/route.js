@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await requireAdmin()
     const cats = await prisma.category.findMany({
-      orderBy: { sortOrder: 'asc' },
+      orderBy: { name: 'asc' },
       include: { _count: { select: { products: true } } },
     })
     return apiResponse(cats.map(c => ({

@@ -12,7 +12,7 @@ const getCategories = unstable_cache(
   async () => {
     try {
       const categories = await prisma.category.findMany({
-        orderBy: { sortOrder: 'asc' },
+        orderBy: { name: 'asc' },
         include: {
           _count: { select: { products: { where: { isActive: true } } } },
           products: {

@@ -4,7 +4,7 @@ import { apiResponse, apiError } from '@/lib/api-error'
 export async function GET() {
   try {
     const categories = await prisma.category.findMany({
-      orderBy: { sortOrder: 'asc' },
+      orderBy: { name: 'asc' },
     })
     return apiResponse(categories)
   } catch (err) {

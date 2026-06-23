@@ -39,7 +39,7 @@ const getProducts = unstable_cache(
 const getCategories = unstable_cache(
   async () => {
     try {
-      return await prisma.category.findMany({ orderBy: { sortOrder: 'asc' } })
+      return await prisma.category.findMany({ orderBy: { name: 'asc' } })
     } catch {
       return []
     }
