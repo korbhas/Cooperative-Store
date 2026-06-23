@@ -139,7 +139,7 @@ export default function Navbar() {
               className="hidden text-[15px] font-bold sm:inline"
               style={{ color: 'var(--color-fm-green)', fontFamily: 'var(--font-heading)' }}
             >
-              FreshMart
+              TU Cooperative Store
             </span>
             </Link>
           </div>

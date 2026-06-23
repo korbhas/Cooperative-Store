@@ -49,7 +49,7 @@ export default function MenuDrawer({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle style={{ color: 'var(--color-fm-green)', fontFamily: 'var(--font-heading)' }}>
-            FreshMart
+            TU Cooperative Store
           </DrawerTitle>
         </DrawerHeader>
 

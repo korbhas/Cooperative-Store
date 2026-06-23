@@ -17,7 +17,7 @@ export default function Footer() {
             className="shrink-0 text-[15px] font-bold"
             style={{ color: 'var(--color-fm-green)', fontFamily: 'var(--font-heading)' }}
           >
-            FreshMart
+            TU Cooperative Store
           </Link>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {LINKS.map(({ title, href }) => (
