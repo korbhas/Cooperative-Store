@@ -7,7 +7,7 @@ import Link from 'next/link'
 // markup stays out of the client JS bundle.
 const SLIDES = [
   {
-    headline: 'Welcome to FreshMart!',
+    headline: 'Welcome to TU Cooperative Store!',
     subtext: 'Everything you need, from pantry staples to fresh picks — in one place.',
     cardBg: 'var(--color-fm-green-soft)',
   },
@@ -78,7 +78,7 @@ export default function WelcomeScreen({ illustrations, onDismiss }) {
             <span style={{
               fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800,
               color: 'var(--color-fm-ink)', letterSpacing: '-0.3px',
-            }}>FreshMart</span>
+            }}>TU Cooperative Store</span>
           </div>
           <span style={{
             fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink2)',
@@ -91,7 +91,7 @@ export default function WelcomeScreen({ illustrations, onDismiss }) {
         <section
           role="region"
           aria-roledescription="carousel"
-          aria-label="FreshMart highlights"
+          aria-label="TU Cooperative Store highlights"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
           style={{

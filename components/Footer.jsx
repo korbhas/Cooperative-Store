@@ -34,7 +34,7 @@ export default function Footer() {
         </div>
         <hr className="border-border my-4" />
         <p className="text-center text-sm text-muted-foreground">
-          &copy; {YEAR} FreshMart. All rights reserved.
+          &copy; {YEAR} TU Cooperative Store. All rights reserved.
         </p>
       </div>
     </footer>

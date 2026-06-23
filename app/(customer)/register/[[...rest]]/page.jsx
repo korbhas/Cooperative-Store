@@ -112,7 +112,7 @@ export default function RegisterPage() {
             Create your account
           </div>
           <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', marginTop: 4 }}>
-            Join FreshMart and start shopping
+            Join TU Cooperative Store and start shopping
           </div>
         </div>
 

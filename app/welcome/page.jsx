@@ -2,7 +2,7 @@ import WelcomeScreen from '@/components/welcome/WelcomeScreen'
 import { welcomeIllustrations } from '@/components/welcome/illustrations'
 
 export const metadata = {
-  title: 'Welcome — FreshMart',
+  title: 'Welcome — TU Cooperative Store',
   description: 'Fresh groceries, delivered fast',
   robots: { index: false },
 }

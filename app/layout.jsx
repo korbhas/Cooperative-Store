@@ -11,7 +11,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata = {
-  title: 'FreshMart',
+  title: 'TU Cooperative Store',
   description: 'Fresh groceries delivered to your door',
 }
 

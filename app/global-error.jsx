@@ -22,7 +22,7 @@ export default function GlobalError({ error, reset }) {
         color: '#1f2520',
       }}>
         <div style={{ fontSize: 32 }}>💥</div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>FreshMart is unavailable</h1>
+        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>TU Cooperative Store is unavailable</h1>
         <p style={{ fontSize: 14, color: '#8a948c', textAlign: 'center', maxWidth: 320, margin: 0 }}>
           A critical error occurred. Please refresh the page.
         </p>

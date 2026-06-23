@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
   })
   if (!product) return {}
   return {
-    title: `${product.name} — FreshMart`,
+    title: `${product.name} — TU Cooperative Store`,
     description: product.description ?? undefined,
   }
 }

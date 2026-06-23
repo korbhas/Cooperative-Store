@@ -64,7 +64,7 @@ async function main() {
   })
 
   const settings = [
-    { key: 'store_name', value: 'FreshMart' },
+    { key: 'store_name', value: 'TU Cooperative Store' },
     { key: 'delivery_fee', value: '25' },
     { key: 'min_order_amount', value: '0' },
     { key: 'delivery_eta_min', value: '30' },

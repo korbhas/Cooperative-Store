@@ -103,7 +103,7 @@ export default async function LoginPage({ searchParams }) {
             fontFamily: 'var(--font-heading)', marginBottom: 14,
           }}>FM</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--color-fm-ink)' }}>
-            Sign in to FreshMart
+            Sign in to TU Cooperative Store
           </div>
           <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', marginTop: 4 }}>
             Fresh groceries, delivered fast

@@ -21,9 +21,9 @@ const SECTIONS = [
     title: 'Store Info',
     description: 'Basic details shown to customers',
     fields: [
-      { key: 'store_name',    label: 'Store Name',    type: 'text',     placeholder: 'FreshMart' },
+      { key: 'store_name',    label: 'Store Name',    type: 'text',     placeholder: 'TU Cooperative Store' },
       { key: 'store_phone',   label: 'Phone Number',  type: 'text',     placeholder: '+91 98765 43210' },
-      { key: 'store_email',   label: 'Email Address', type: 'text',     placeholder: 'hello@freshmart.in' },
+      { key: 'store_email',   label: 'Email Address', type: 'text',     placeholder: 'hello@tucooperativestore.com' },
       { key: 'store_address', label: 'Store Address', type: 'textarea', placeholder: '123 Market Street, Bengaluru' },
     ],
   },

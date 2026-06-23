@@ -73,8 +73,8 @@ export function usePlaceOrder({ onExit } = {}) {
       if (!data.razorpayOrderId) {
         finishOrder()
         onExit?.()
-        toast.success(`Order #${data.orderId} placed! Track it under Orders.`)
-        router.push('/')
+        toast.success(`Order #${data.orderId} placed!`)
+        router.push(`/order/${data.orderId}/confirmed`)
         return
       }
 
@@ -89,7 +89,7 @@ export function usePlaceOrder({ onExit } = {}) {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: Math.round(total * 100),
         currency: RAZORPAY_CURRENCY,
-        name: 'FreshMart',
+        name: 'TU Cooperative Store',
         description: `Order #${data.orderId}`,
         order_id: data.razorpayOrderId,
         prefill: { name, contact: phone, email: user?.primaryEmailAddress?.emailAddress || '' },
@@ -108,8 +108,8 @@ export function usePlaceOrder({ onExit } = {}) {
             })
             if (vRes.ok) {
               finishOrder()
-              toast.success(`Payment successful! Order #${data.orderId} is confirmed — track it under Orders.`)
-              router.push('/')
+              toast.success(`Payment successful! Order #${data.orderId} is confirmed.`)
+              router.push(`/order/${data.orderId}/confirmed`)
             } else {
               toast.error('Payment verification failed. Contact support.')
             }

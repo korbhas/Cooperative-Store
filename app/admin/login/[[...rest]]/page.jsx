@@ -98,7 +98,7 @@ export default async function AdminLoginPage({ searchParams }) {
             Admin Portal
           </div>
           <div style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fm-ink3)', marginTop: 4 }}>
-            FreshMart internal access only
+            TU Cooperative Store internal access only
           </div>
         </div>
 
