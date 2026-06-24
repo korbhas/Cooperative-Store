@@ -70,7 +70,7 @@ export default function AdminShell({ children, displayName, email, initials }) {
         <SidebarHeader className="h-14 justify-center border-b border-sidebar-border">
           <div className="flex items-center gap-2.5 overflow-hidden px-1">
             <div
-              className="flex size-8 shrink-0 items-center justify-center rounded-lg text-[13px] font-extrabold text-white"
+              className="flex size-8 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold text-white"
               style={{ background: 'var(--color-fm-accent)', fontFamily: 'var(--font-heading)' }}
             >
               FM
