@@ -77,7 +77,7 @@ export default function AdminShell({ children, displayName, email, initials }) {
             </div>
             <div className="grid leading-tight group-data-[collapsible=icon]:hidden">
               <span className="truncate text-sm font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
-                FreshMart
+                TU Cooperative Store
               </span>
               <span className="truncate text-[10px] uppercase tracking-widest text-white/50" style={{ fontFamily: 'var(--font-mono)' }}>
                 Admin
